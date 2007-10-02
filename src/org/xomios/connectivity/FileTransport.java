@@ -11,8 +11,8 @@ package org.xomios.connectivity;
 /**
  * Implements a <code>Transport</code> that provides access to files.
  * 
- * @author Noah Fontes <fontes@audoptic.com>
- * @author Christopher Thunes <c2thunes@brewtab.com>
+ * @author Noah Fontes <nfontes@xomios.brewtab.com>
+ * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public class FileTransport extends Transport {
 

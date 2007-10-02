@@ -13,8 +13,8 @@ package org.xomios.connectivity;
  * Networks are responsible for packet delivery and communication between
  * endpoints, but not the construction or interpretation of packets.
  * 
- * @author Noah Fontes <fontes@audoptic.com>
- * @author Christopher Thunes <c2thunes@brewtab.com>
+ * @author Noah Fontes <nfontes@xomios.brewtab.com>
+ * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public abstract class Network {
 

@@ -11,8 +11,8 @@ package org.xomios.connectivity;
 /**
  * Implementation of TCP packet transmission.
  * 
- * @author Noah Fontes <fontes@audoptic.com>
- * @author Christopher Thunes <c2thunes@brewtab.com>
+ * @author Noah Fontes <nfontes@xomios.brewtab.com>
+ * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public class TCPTransport extends NetworkSocketTransport {
 

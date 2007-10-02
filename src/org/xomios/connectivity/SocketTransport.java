@@ -11,8 +11,8 @@ package org.xomios.connectivity;
 /**
  * Represents a socket as defined by the Berkeley socket API.
  * 
- * @author Noah Fontes <fontes@audoptic.com>
- * @author Christopher Thunes <c2thunes@brewtab.com>
+ * @author Noah Fontes <nfontes@xomios.brewtab.com>
+ * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public abstract class SocketTransport extends Transport {
 

@@ -12,8 +12,8 @@ package org.xomios.connectivity;
  * Implements transmission of ICMP packets. Construction of ICMP packets
  * requires superuser privileges.
  * 
- * @author Noah Fontes <fontes@audoptic.com>
- * @author Christopher Thunes <c2thunes@brewtab.com>
+ * @author Noah Fontes <nfontes@xomios.brewtab.com>
+ * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public class ICMPTransport extends NetworkSocketTransport {
 

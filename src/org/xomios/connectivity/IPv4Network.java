@@ -11,8 +11,8 @@ package org.xomios.connectivity;
 /**
  * An implementation of connections over the IPv4 network.
  * 
- * @author Noah Fontes <fontes@audoptic.com>
- * @author Christopher Thunes <c2thunes@brewtab.com>
+ * @author Noah Fontes <nfontes@xomios.brewtab.com>
+ * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public class IPv4Network extends IPNetwork {
 

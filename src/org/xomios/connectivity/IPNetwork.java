@@ -12,8 +12,8 @@ package org.xomios.connectivity;
  * Represents any of the Internet Protocol networks currently in use, including
  * IPv4 and IPv6.
  * 
- * @author Noah Fontes <fontes@audoptic.com>
- * @author Christopher Thunes <c2thunes@brewtab.com>
+ * @author Noah Fontes <nfontes@xomios.brewtab.com>
+ * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public abstract class IPNetwork extends Network {
 
