@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Xomios Project
+   Copyright (c) 2007 Xomios Contributors
+
+   This file is released under a modified BSD license. For more information,
+   see the LICENSE file included in this distribution.
+  -->
+<project name="Xomios" default="compile" basedir="..">
+
+	<property name="dir.global" value="." />
+	<property name="dir.global.src" value="src" />
+
+	<!-- Ensure build properties exist -->
+	<fail message="Build platform and architecture must be set and correspond to a valid path">
+		<condition>
+			<not>
+				<and>
+					<isset property="build.platform" />
+					<isset property="build.arch" />
+					<available file="platform/${build.platform}/${build.arch}" type="dir" />
+					<available file="platform/${build.platform}/${build.arch}/src" type="dir" />
+				</and>
+			</not>
+		</condition>
+	</fail>
+
+	<property name="dir.platform" value="platform/${build.platform}/${build.arch}" />
+	<property name="dir.platform.src" value="${dir.platform}/src" />
+	<property name="dir.platform.native" value="${dir.platform}/native" />
+
+	<property name="dir.output" value="${dir.platform}/build" />
+	<property name="dir.output.lib" value="${dir.output}/lib" />
+	<property name="dir.output.jar" value="${dir.output}/jar" />
+
+	<condition property="build.jni">
+		<available file="${dir.platform.native}" type="dir" />
+	</condition>
+
+	<path id="path.project">
+		<pathelement location="${dir.global.src}" />
+		<pathelement location="${dir.platform.src}" />
+	</path>
+	
+	<target name="init">
+		<tstamp />
+	</target>
+
+	<target name="clean" depends="init">
+		<delete dir="${dir.output}" />
+	</target>
+
+	<target name="compile" depends="clean,init">
+		<mkdir dir="${dir.output.lib}" />
+		
+		<javac destdir="${dir.output.lib}" srcdir="${dir.global.src}" />
+		<javac destdir="${dir.output.lib}" srcdir="${dir.platform.src}" />
+	</target>
+
+	<target name="jar" depends="compile,init">
+		<mkdir dir="${dir.output.jar}" />
+		<jar destfile="${dir.output.jar}/xomios-${build.platform}-${build.architecture}.jar">
+			<fileset dir="${dir.output.lib}" />
+		</jar>
+	</target>
+
+</project>
