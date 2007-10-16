@@ -23,6 +23,9 @@
 </toolChain>
 </folderInfo>
 <fileInfo id="preference.org.eclipse.cdt.managedbuilder.core.configurationDataProvider.1041442959.1004995755" name="build.xml" rcbsApplicability="disable" resourcePath="builder/build.xml" toolsToInvoke=""/>
+<sourceEntries>
+<entry excluding=".hg" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+</sourceEntries>
 </configuration>
 </storageModule>
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="preference.org.eclipse.cdt.managedbuilder.core.configurationDataProvider.1041442959" moduleId="org.eclipse.cdt.core.settings" name="Preference Configuration">
