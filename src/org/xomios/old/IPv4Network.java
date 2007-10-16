@@ -6,15 +6,14 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.old;
 
 /**
- * Represents any of the Internet Protocol networks currently in use, including
- * IPv4 and IPv6.
+ * An implementation of connections over the IPv4 network.
  * 
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
-public abstract class IPNetwork extends Network {
+public class IPv4Network extends IPNetwork {
 
 }

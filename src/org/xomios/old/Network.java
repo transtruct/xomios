@@ -6,14 +6,16 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.old;
 
 /**
- * An implementation of connections over the IPv4 network.
+ * Represents the network paradigm of the OSI model, including IP connectivity.
+ * Networks are responsible for packet delivery and communication between
+ * endpoints, but not the construction or interpretation of packets.
  * 
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
-public class IPv4Network extends IPNetwork {
+public abstract class Network {
 
 }
