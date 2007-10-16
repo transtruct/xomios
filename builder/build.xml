@@ -6,7 +6,9 @@
   This file is released under a modified BSD license. For more information,
   see the LICENSE file included in this distribution.
   -->
-<project name="Xomios" default="compile" basedir="..">
+<project
+	name="Xomios" default="compile" basedir=".."
+	xmlns:cpptasks="antlib:org.sf.net.antcontrib.cpptasks">
 
 	<property name="dir.global" value="." />
 	<property name="dir.global.src" value="src" />
@@ -24,42 +26,53 @@
 			</not>
 		</condition>
 	</fail>
-
-	<property name="dir.platform" value="platform/${build.platform}/${build.arch}" />
-	<property name="dir.platform.src" value="${dir.platform}/src" />
-	<property name="dir.platform.native" value="${dir.platform}/native" />
-
-	<property name="dir.output" value="${dir.platform}/build" />
-	<property name="dir.output.lib" value="${dir.output}/lib" />
-	<property name="dir.output.jar" value="${dir.output}/jar" />
-
-	<condition property="build.jni">
-		<available file="${dir.platform.native}" type="dir" />
-	</condition>
-
-	<path id="path.project">
-		<pathelement location="${dir.global.src}" />
-		<pathelement location="${dir.platform.src}" />
-	</path>
 	
+	<property name="dir.platform" value="platform/${build.platform}" />
+	
+	<property name="dir.build" value="${dir.platform}/${build.arch}" />
+	<property name="dir.build.src" value="${dir.build}/src" />
+	<property name="dir.build.native" value="${dir.build}/native" />
+
+	<property name="dir.build.output" value="${dir.build}/build" />
+	<property name="dir.build.output.lib" value="${dir.build.output}/lib" />
+	<property name="dir.build.output.jar" value="${dir.build.output}/jar" />
+
+	<property file="${dir.platform}/build.properties" />
+	
+	<!-- These must be defined per-platform -->
+	<fail message="Build platform is not capable of compiling native code">
+		<condition>
+			<not>
+				<and>
+					<isset property="build.make" />
+					<isset property="build.make.args" />
+				</and>
+			</not>
+		</condition>
+	</fail>
+
 	<target name="init">
 		<tstamp />
 	</target>
 
 	<target name="clean" depends="init">
-		<delete dir="${dir.output}" />
+		<delete dir="${dir.build.output}" />
 	</target>
 
 	<target name="compile" depends="clean,init">
-		<mkdir dir="${dir.output.lib}" />
+		<mkdir dir="${dir.build.output.lib}" />
 		
-		<javac destdir="${dir.output.lib}" srcdir="${dir.global.src}" />
-		<javac destdir="${dir.output.lib}" srcdir="${dir.platform.src}" />
+		<javac destdir="${dir.build.output.lib}" srcdir="${dir.global.src}" />
+		<javac destdir="${dir.build.output.lib}" srcdir="${dir.build.src}" />
+		
+		<exec executable="${build.make}" dir="${dir.build.native}" failonerror="true">
+			<arg line="${build.make.args}" />
+		</exec>
 	</target>
 
 	<target name="jar" depends="compile,init">
-		<mkdir dir="${dir.output.jar}" />
-		<jar destfile="${dir.output.jar}/xomios-${build.platform}-${build.architecture}.jar">
+		<mkdir dir="${dir.build.output.jar}" />
+		<jar destfile="${dir.build.output.jar}/xomios-${build.platform}-${build.arch}.jar">
 			<fileset dir="${dir.output.lib}" />
 		</jar>
 	</target>

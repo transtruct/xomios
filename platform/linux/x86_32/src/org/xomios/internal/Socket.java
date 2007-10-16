@@ -10,13 +10,10 @@ package org.xomios.internal;
 
 /**
  * Native socket implemntation
- *
+ * 
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
 public class Socket {
 
-    
-
 }
-
