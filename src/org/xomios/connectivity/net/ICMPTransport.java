@@ -6,7 +6,7 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.net;
 
 /**
  * Implements transmission of ICMP packets. Construction of ICMP packets

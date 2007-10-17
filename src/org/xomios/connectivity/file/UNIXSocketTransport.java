@@ -6,7 +6,9 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.file;
+
+import org.xomios.connectivity.net.SocketTransport;
 
 /**
  * Implements data transmission between UNIX sockets.

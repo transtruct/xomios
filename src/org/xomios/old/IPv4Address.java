@@ -6,7 +6,9 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.old;
+
+import org.xomios.connectivity.net.InvalidAddressException;
 
 /**
  * 

@@ -139,7 +139,7 @@ public class Socket {
 
 	static {
 		/* Load the native library */
-		System.loadLibrary( "xomiosNativeSocket" );
+		System.loadLibrary( "libxomios" );
 	}
 
 }

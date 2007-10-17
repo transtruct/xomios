@@ -6,14 +6,16 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.net;
+
+import org.xomios.connectivity.Transport;
 
 /**
- * Represents a socket between two distant locations.
+ * Represents a socket as defined by the Berkeley socket API.
  * 
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
-public abstract class NetworkSocketTransport extends SocketTransport {
+public abstract class SocketTransport extends Transport {
 
 }

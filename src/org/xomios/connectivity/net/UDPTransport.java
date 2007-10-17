@@ -6,14 +6,14 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.net;
 
 /**
- * Represents a socket as defined by the Berkeley socket API.
+ * Implementation of UDP packet transmission.
  * 
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
-public abstract class SocketTransport extends Transport {
+public class UDPTransport extends NetworkSocketTransport {
 
 }

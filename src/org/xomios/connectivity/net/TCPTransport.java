@@ -6,14 +6,14 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.net;
 
 /**
- * Implementation of UDP packet transmission.
+ * Implementation of TCP packet transmission.
  * 
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
-public class UDPTransport extends NetworkSocketTransport {
+public class TCPTransport extends NetworkSocketTransport {
 
 }

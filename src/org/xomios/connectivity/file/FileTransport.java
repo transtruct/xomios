@@ -6,14 +6,16 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.file;
+
+import org.xomios.connectivity.Transport;
 
 /**
- * Implementation of TCP packet transmission.
+ * Implements a <code>Transport</code> that provides access to files.
  * 
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
-public class TCPTransport extends NetworkSocketTransport {
+public class FileTransport extends Transport {
 
 }

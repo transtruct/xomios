@@ -6,7 +6,7 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.net;
 
 
 /**

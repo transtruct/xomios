@@ -6,14 +6,14 @@
  * see the LICENSE file included in this distribution.
  */
 
-package org.xomios.connectivity;
+package org.xomios.connectivity.net;
 
 /**
- * Implements a <code>Transport</code> that provides access to files.
+ * Represents a socket between two distant locations.
  * 
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
-public class FileTransport extends Transport {
+public abstract class NetworkSocketTransport extends SocketTransport {
 
 }
