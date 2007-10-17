@@ -1,4 +1,14 @@
+syntax: glob
+
+*.class
+*.so
+*.dll
+*.exe
+*.jar
+.classpath
+.project
+.cproject
+
 syntax: regexp
 
-\.class$
 ^\.settings/
