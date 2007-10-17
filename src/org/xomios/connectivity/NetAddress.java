@@ -8,6 +8,8 @@
 
 package org.xomios.connectivity;
 
+import org.xomios.internal.NetUtil;
+
 /**
  * Abstract representation of a network IP address; IPv4 or IPv6.
  * 
@@ -42,9 +44,9 @@ public abstract class NetAddress {
 	 * @throws AddressLookupException Thrown when address lookup for the
 	 *             specified host name fails
 	 */
-	public NetAddress ( String host ) throws AddressLookupException {
+	public NetAddress ( String host ) throws NameLookupException {
 		this.host = host;
-		this.doAddressLookup();
+		this.address = NetUtil.DNSLookup( host );
 	}
 
 	/**
@@ -92,14 +94,5 @@ public abstract class NetAddress {
 	 */
 	@Override
 	public abstract String toString ( );
-
-	/**
-	 * Using the internally stored value for host performs and address lookup,
-	 * and if successful stores the IP address in address
-	 * 
-	 * @throws AddressLookupException Thrown if the address lookup failed to
-	 *             return a IP address
-	 */
-	protected abstract void doAddressLookup ( ) throws AddressLookupException;
 
 }

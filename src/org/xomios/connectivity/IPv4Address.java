@@ -53,7 +53,4 @@ public class IPv4Address extends NetAddress {
 		return null;
 	}
 
-	@Override
-	protected native void doAddressLookup ( );
-
 }

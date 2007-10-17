@@ -8,29 +8,14 @@
 
 package org.xomios.internal;
 
-import org.xomios.connectivity.*;
-
 /**
-<<<<<<< /home/christopher/programming/java/xomios-head/platform/linux/x86_32/src/org/xomios/internal/Socket.java.orig.852229962
- * Native socket implemntation
- * 
-||||||| /tmp/Socket.java~base.i8v6hr
- * Native socket implemntation
- *
-=======
  * Native socket implementation
  * 
->>>>>>> /tmp/Socket.java~other.feOzgw
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
 public class Socket {
 
-<<<<<<< /home/christopher/programming/java/xomios-head/platform/linux/x86_32/src/org/xomios/internal/Socket.java.orig.852229962
-||||||| /tmp/Socket.java~base.i8v6hr
-    
-
-=======
 	/*
 	 * Network families, i.e IPv4, IPv6, DexNet, etc. This includes things such
 	 * as Unix files sockets.
@@ -157,9 +142,4 @@ public class Socket {
 		System.loadLibrary( "xomiosNativeSocket" );
 	}
 
->>>>>>> /tmp/Socket.java~other.feOzgw
 }
-<<<<<<< /tmp/Socket.java~base.i8v6hr
-
-=======
->>>>>>> /tmp/Socket.java~other.feOzgw
