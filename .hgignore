@@ -1,0 +1,11 @@
+syntax: glob
+
+*.class
+*.so
+*.dll
+*.exe
+*.jar
+.settings*
+.classpath
+.project
+.cproject
