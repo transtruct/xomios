@@ -57,7 +57,7 @@ JNIEXPORT void JNICALL Java_org_xomios_internal_Socket_createSocket ( JNIEnv *en
 			sock = SOCK_RAW;
 			break;
 	}
-	
+
 	socketFD = socket( af, sock, 0 );
 	if ( socketFD < 0 ) {
 		/* Error occured while creating socket */
@@ -66,7 +66,7 @@ JNIEXPORT void JNICALL Java_org_xomios_internal_Socket_createSocket ( JNIEnv *en
 		 * TODO: Check errno for the particular error and pass this to a new
 		 * SocketCreationException object
 		 */
-		jclass SocketException = (*env)->FindClass( env, "org.xomios.connectivity.net.SocketException" );
+		jclass SocketException = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 		(*env)->ThrowNew( env, SocketException, "Error creating socket" );
 	}
 	else {
@@ -89,7 +89,7 @@ JNIEXPORT void JNICALL Java_org_xomios_internal_Socket_close ( JNIEnv *env, jobj
 	int err = close(socketFD);
 	
 	if ( err < 0 ) {
-		jclass SocketException = (*env)->FindClass( env, "org.xomios.connectivity.net.SocketException" );
+		jclass SocketException = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 		(*env)->ThrowNew( env, SocketException, "Error occurred while trying to close socket" );
 	}
 	
