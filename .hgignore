@@ -2,6 +2,7 @@ syntax: glob
 
 *.class
 *.so
+*.o
 *.dll
 *.exe
 *.jar
@@ -12,3 +13,6 @@ syntax: glob
 syntax: regexp
 
 ^\.settings/
+^builder/.*?.sh
+^old
+^\.externalToolBuilders

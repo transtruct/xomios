@@ -10,8 +10,10 @@ OBJECTS=internal_Socket.o
 SOURCES=internal_Socket.c
 
 CC=gcc
-CFLAGS+=-Wall -shared -Wl -static -lc
+CFLAGS+=-Wall -shared -static -lc
 JVM_INCLUDE=-I/usr/lib/jvm/java-6-sun/include/
+JVM_INCLUDE+=-I/usr/lib/jvm/java-6-sun/include/linux/
+
 
 all: $(OBJECTS)
 	$(CC) $(CFLAGS) -o libxomios.so -Wl,-soname,libxomios.so $(OBJECTS)

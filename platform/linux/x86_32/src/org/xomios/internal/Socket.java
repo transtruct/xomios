@@ -65,7 +65,7 @@ public class Socket {
 
 	/* Address family (see above) and socket type (see above) */
 	protected int addressFamily;
-	protected int sockType;
+	protected int socketType;
 
 	/**
 	 * The socket file descriptor. This should never be accessed from within
@@ -83,7 +83,7 @@ public class Socket {
 	public Socket ( int addressFamily, int sockType ) {
 		/* Just copy these in and we let the createSocket function handle it */
 		this.addressFamily = addressFamily;
-		this.sockType = sockType;
+		this.socketType = sockType;
 
 		/* Create the socket file descriptor */
 		this.createSocket();

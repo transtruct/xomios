@@ -12,7 +12,7 @@
 
 	<property name="dir.global" value="." />
 	<property name="dir.global.src" value="src" />
-
+	
 	<!-- Ensure build properties exist -->
 	<fail message="Build platform and architecture must be set and correspond to a valid path">
 		<condition>
@@ -33,11 +33,12 @@
 	<property name="dir.build.src" value="${dir.build}/src" />
 	<property name="dir.build.native" value="${dir.build}/native" />
 
-	<property name="dir.build.output" value="${dir.build}/build" />
+	<property name="dir.build.output" value="build/${build.platform}/${build.arch}" />
+	<property name="dir.build.output.classes" value="${dir.build.output}/classes" />
 	<property name="dir.build.output.lib" value="${dir.build.output}/lib" />
 	<property name="dir.build.output.jar" value="${dir.build.output}/jar" />
 
-	<property file="${dir.platform}/build.properties" />
+	<property file="platform/${build.platform}/build.properties" />
 	
 	<!-- These must be defined per-platform -->
 	<fail message="Build platform is not capable of compiling native code">
@@ -53,7 +54,7 @@
 
 	<target name="init">
 		<tstamp />
-	</target>
+	</target> 
 
 	<target name="clean" depends="init">
 		<delete dir="${dir.build.output}" />
@@ -61,13 +62,19 @@
 
 	<target name="compile" depends="clean,init">
 		<mkdir dir="${dir.build.output.lib}" />
+		<mkdir dir="${dir.build.output.classes}" />		
 		
-		<javac destdir="${dir.build.output.lib}" srcdir="${dir.global.src}" />
-		<javac destdir="${dir.build.output.lib}" srcdir="${dir.build.src}" />
+		<javac destdir="${dir.build.output.classes}" srcdir="${dir.global.src}" />
+		<javac destdir="${dir.build.output.classes}" srcdir="${dir.build.src}" />
 		
 		<exec executable="${build.make}" dir="${dir.build.native}" failonerror="true">
 			<arg line="${build.make.args}" />
 		</exec>
+		
+		<move file="${dir.build.native}/libxomios.so" todir="${dir.build.output.lib}" />
+		<!--<delete>
+			<fileset dir="${dir.build.native}" includes="*.o" />
+		</delete>-->
 	</target>
 
 	<target name="jar" depends="compile,init">
