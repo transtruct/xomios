@@ -22,4 +22,4 @@ $(SOURCES):
 
 .PHONY: clean
 clean:
-	-rm $(OBJECTS) libxomios.so
+	-rm $(OBJECTS)

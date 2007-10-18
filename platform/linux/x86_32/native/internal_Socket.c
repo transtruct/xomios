@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_org_xomios_internal_Socket_createSocket ( JNIEnv *en
 	jclass socketClass = (*env)->GetObjectClass( env, obj );
 	
 	/* Socket file descriptor, address family, and socket type */
-	jfieldID socketFD_f = (*env)->GetFieldID( env, socketClass, "csocket", "I" );
+	jfieldID socketFD_f = (*env)->GetFieldID( env, socketClass, "cSocket", "I" );
 	jfieldID addressFamily_f = (*env)->GetFieldID( env, socketClass, "addressFamily", "I" );
 	jfieldID socketType_f = (*env)->GetFieldID( env, socketClass, "socketType", "I" );
 	
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_org_xomios_internal_Socket_createSocket ( JNIEnv *en
 	jint socketType = (*env)->GetIntField( env, obj, socketType_f );
 	
 	jint socketFD;
-	int af, sock; /* address family and socket type */
+	int af, sock; /* Address family and socket type */
 	
 	switch ( addressFamily ) {
 	case org_xomios_internal_Socket_AF_INET:

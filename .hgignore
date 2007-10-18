@@ -13,6 +13,6 @@ syntax: glob
 syntax: regexp
 
 ^\.settings/
-^builder/.*?.sh
+^builder
 ^old
 ^\.externalToolBuilders
