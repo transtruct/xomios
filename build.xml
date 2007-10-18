@@ -7,12 +7,12 @@
   see the LICENSE file included in this distribution.
   -->
 <project
-	name="Xomios" default="compile" basedir=".."
+	name="Xomios" default="compile" basedir="."
 	xmlns:cpptasks="antlib:org.sf.net.antcontrib.cpptasks">
 
 	<property name="dir.global" value="." />
 	<property name="dir.global.src" value="src" />
-	
+
 	<!-- Ensure build properties exist -->
 	<fail message="Build platform and architecture must be set and correspond to a valid path">
 		<condition>
@@ -26,9 +26,9 @@
 			</not>
 		</condition>
 	</fail>
-	
+
 	<property name="dir.platform" value="platform/${build.platform}" />
-	
+
 	<property name="dir.build" value="${dir.platform}/${build.arch}" />
 	<property name="dir.build.src" value="${dir.build}/src" />
 	<property name="dir.build.native" value="${dir.build}/native" />
@@ -39,7 +39,7 @@
 	<property name="dir.build.output.jar" value="${dir.build.output}/jar" />
 
 	<property file="platform/${build.platform}/build.properties" />
-	
+
 	<!-- These must be defined per-platform -->
 	<fail message="Build platform is not capable of compiling native code">
 		<condition>
@@ -47,6 +47,8 @@
 				<and>
 					<isset property="build.make" />
 					<isset property="build.make.args" />
+					<isset property="build.make.targets.compile" />
+					<isset property="build.make.targets.clean" />
 				</and>
 			</not>
 		</condition>
@@ -57,24 +59,27 @@
 	</target> 
 
 	<target name="clean" depends="init">
+		<exec executable="${build.make}" dir="${dir.build.native}">
+			<arg line="${build.make.args}" />
+			<arg value="${build.make.targets.clean}" />
+		</exec>
+
 		<delete dir="${dir.build.output}" />
 	</target>
 
 	<target name="compile" depends="clean,init">
 		<mkdir dir="${dir.build.output.lib}" />
 		<mkdir dir="${dir.build.output.classes}" />		
-		
+
 		<javac destdir="${dir.build.output.classes}" srcdir="${dir.global.src}" />
 		<javac destdir="${dir.build.output.classes}" srcdir="${dir.build.src}" />
-		
+
 		<exec executable="${build.make}" dir="${dir.build.native}" failonerror="true">
 			<arg line="${build.make.args}" />
+			<arg value="${build.make.targets.compile}" />
 		</exec>
-		
+
 		<move file="${dir.build.native}/libxomios.so" todir="${dir.build.output.lib}" />
-		<!--<delete>
-			<fileset dir="${dir.build.native}" includes="*.o" />
-		</delete>-->
 	</target>
 
 	<target name="jar" depends="compile,init">
