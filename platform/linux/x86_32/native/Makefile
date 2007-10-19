@@ -6,8 +6,8 @@
 
 # Makefile for Linux x86 32-bit architecture
 
-OBJECTS=internal_Socket.o
-SOURCES=internal_Socket.c
+OBJECTS = internal_Socket.o
+SOURCES = internal_Socket.c
 
 CFLAGS += -Wall -fPIC -I/usr/lib/jvm/java-6-sun/include/ -I/usr/lib/jvm/java-6-sun/include/linux/
 LIBS = -shared -fPIC

@@ -8,6 +8,8 @@
 
 package org.xomios.connectivity;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Represents the lowest application-level input/output paradigm. A
  * <code>Transport</code> simply provides methods for reading and writing
@@ -17,5 +19,29 @@ package org.xomios.connectivity;
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  */
 public abstract class Transport {
+
+	private final CopyOnWriteArrayList<TransportListener> transportListeners = new CopyOnWriteArrayList<TransportListener>();
+
+	/**
+	 * Adds a new transport listener to this transport.
+	 * 
+	 * @param tl A transport listener.
+	 */
+	public void addTransportListener ( TransportListener tl ) {
+		this.transportListeners.add( tl );
+	}
+
+	/**
+	 * Removes a transport listener from this transport.
+	 * 
+	 * @param tl A transport listener.
+	 */
+	public void removeTransportListener ( TransportListener tl ) {
+		if ( !this.transportListeners.contains( tl ) ) {
+			return;
+		}
+
+		this.transportListeners.remove( tl );
+	}
 
 }
