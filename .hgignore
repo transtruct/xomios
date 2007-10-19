@@ -13,6 +13,7 @@ syntax: glob
 syntax: regexp
 
 ^\.settings/
-^builder
-^old
-^\.externalToolBuilders
+^builder/
+^old/
+^doc/
+^\.externalToolBuilders/

@@ -10,7 +10,7 @@ OBJECTS = internal_Socket.o
 SOURCES = internal_Socket.c
 
 CFLAGS += -Wall -fPIC -I/usr/lib/jvm/java-6-sun/include/ -I/usr/lib/jvm/java-6-sun/include/linux/
-LIBS = -shared -fPIC
+LIBS = -Wall -shared -fPIC
 
 all: $(OBJECTS)
 	$(CC) $(LIBS) -o libxomios.so $(OBJECTS)

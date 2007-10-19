@@ -10,8 +10,11 @@
 	name="Xomios" default="compile" basedir="."
 	xmlns:cpptasks="antlib:org.sf.net.antcontrib.cpptasks">
 
-	<property name="dir.global" value="." />
-	<property name="dir.global.src" value="src" />
+	<property name="dir" value="." />
+	<property name="dir.src" value="src" />
+	<property name="dir.platform" value="platform" />
+	<property name="dir.build" value="build" />
+	<property name="dir.doc" value="doc" />
 
 	<!-- Ensure build properties exist -->
 	<fail message="Build platform and architecture must be set and correspond to a valid path">
@@ -27,16 +30,18 @@
 		</condition>
 	</fail>
 
-	<property name="dir.platform" value="platform/${build.platform}" />
+	<property name="dir.platform.platform" value="${dir.platform}/${build.platform}" />
 
-	<property name="dir.build" value="${dir.platform}/${build.arch}" />
-	<property name="dir.build.src" value="${dir.build}/src" />
-	<property name="dir.build.native" value="${dir.build}/native" />
+	<property name="dir.platform.platform.arch" value="${dir.platform.platform}/${build.arch}" />
+	<property name="dir.platform.platform.arch.src" value="${dir.platform.platform.arch}/src" />
+	<property name="dir.platform.platform.arch.native" value="${dir.platform.platform.arch}/native" />
 
-	<property name="dir.build.output" value="build/${build.platform}/${build.arch}" />
+	<property name="dir.build.output" value="${dir.build}/${build.platform}/${build.arch}" />
 	<property name="dir.build.output.classes" value="${dir.build.output}/classes" />
 	<property name="dir.build.output.lib" value="${dir.build.output}/lib" />
 	<property name="dir.build.output.jar" value="${dir.build.output}/jar" />
+
+	<property name="dir.doc.output" value="${dir.doc}/${build.platform}/${build.arch}" />
 
 	<property file="platform/${build.platform}/build.properties" />
 
@@ -59,7 +64,7 @@
 	</target> 
 
 	<target name="clean" depends="init">
-		<exec executable="${build.make}" dir="${dir.build.native}">
+		<exec executable="${build.make}" dir="${dir.platform.platform.arch.native}">
 			<arg line="${build.make.args}" />
 			<arg value="${build.make.targets.clean}" />
 		</exec>
@@ -67,19 +72,30 @@
 		<delete dir="${dir.build.output}" />
 	</target>
 
+	<target name="doc" depends="init">
+		<mkdir dir="${dir.doc.output}" />
+
+		<javadoc access="public" author="true" destdir="${dir.doc.output}" use="true" version="true" windowtitle="${ant.project.name} Documentation">
+			<sourcepath path="${dir.src}" />
+			<sourcepath path="${dir.platform.platform.arch.src}" />
+			
+			<link href="http://java.sun.com/javase/6/docs/api/" />
+		</javadoc>
+	</target>
+
 	<target name="compile" depends="clean,init">
 		<mkdir dir="${dir.build.output.lib}" />
 		<mkdir dir="${dir.build.output.classes}" />		
 
-		<javac destdir="${dir.build.output.classes}" srcdir="${dir.global.src}" />
-		<javac destdir="${dir.build.output.classes}" srcdir="${dir.build.src}" />
+		<javac destdir="${dir.build.output.classes}" srcdir="${dir.src}" />
+		<javac destdir="${dir.build.output.classes}" srcdir="${dir.platform.platform.arch.src}" />
 
-		<exec executable="${build.make}" dir="${dir.build.native}" failonerror="true">
+		<exec executable="${build.make}" dir="${dir.platform.platform.arch.native}" failonerror="true">
 			<arg line="${build.make.args}" />
 			<arg value="${build.make.targets.compile}" />
 		</exec>
 
-		<move file="${dir.build.native}/libxomios.so" todir="${dir.build.output.lib}" />
+		<move file="${dir.platform.platform.arch.native}/libxomios.so" todir="${dir.build.output.lib}" />
 	</target>
 
 	<target name="jar" depends="compile,init">
