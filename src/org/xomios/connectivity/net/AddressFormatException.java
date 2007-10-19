@@ -10,20 +10,20 @@ package org.xomios.connectivity.net;
 
 
 /**
- * 
+ * Thrown when a incorrectly network address is passed to a method
  * 
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
-public class InvalidAddressException extends Exception {
+public class AddressFormatException extends IllegalArgumentException {
 
 	static final long serialVersionUID = 40712345230012L;
 
-	public InvalidAddressException ( ) {
-		super( "Invalid IP address in byte array" );
+	public AddressFormatException ( ) {
+		super( "Invalid IP address specified" );
 	}
 
-	public InvalidAddressException ( String msg ) {
+	public AddressFormatException ( String msg ) {
 		super( msg );
 	}
 }

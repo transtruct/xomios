@@ -8,7 +8,9 @@
 
 package org.xomios.internal;
 
+import org.xomios.connectivity.net.AddressFormatException;
 import org.xomios.connectivity.net.NetworkAddress;
+import org.xomios.connectivity.net.SocketException;
 
 /**
  * Native socket implementation
@@ -124,10 +126,20 @@ public class Socket {
 	public native void close ( );
 
 	/**
+	 * Connect the socket to the remove host specified by addr
 	 * 
-	 * @param addr
+	 * @param addr A NetworkAddress
 	 */
-	public native void connect ( NetworkAddress addr, int port );
+	public void connect ( NetworkAddress addr ) throws AddressFormatException, SocketException {
+		if ( !addr.portSet() ) {
+			throw new AddressFormatException( "Host not set in NetworkAddress object" );
+		}
+
+		this.connect( addr.getAddress(), addr.getPort(), this.socketType, this.addressFamily );
+	}
+
+	protected native void connect ( byte[] ip, int port, int socktype, int af );
+
 
 	/**
 	 * Read a specified number of bytes from the socket connection

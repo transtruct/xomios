@@ -8,129 +8,71 @@
 
 package org.xomios.connectivity.net;
 
+
 /**
- * Abstract representation of a network IP address; IPv4 or IPv6.
+ * A network address. This can be either IP version 4 or 6 and may or may not
+ * be associated with a port number
  * 
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
-public class NetworkAddress {
+public abstract class NetworkAddress implements NetworkPort {
 
-	/*
-	 * Host as a sequence of bytes. The length of this depends on the IP
-	 * version being used
-	 */
 	protected byte[] address;
 
-	/*
-	 * Host name of the specified system. If this a value hasn't already been
-	 * determined though user input it is determined by reverse DNS look up as
-	 * supported by the operating system. Default is null (not set).
-	 */
-	protected String host = null;
+	protected byte ipVersion;
 
 	/**
-	 * Version of IP used. At the time this can be 4 or 6.
+	 * Set the address for this object
+	 * 
+	 * @param host The host IP as a string
+	 * @throws AddressFormatException the address is not properly formatted
 	 */
-	protected int ipVersion;
+	public abstract void setAddress ( String host ) throws AddressFormatException;
 
 	/**
-	 * Private constructor. Retrieve instances using getIPv<x>Address
-	 * functions.
+	 * Sets the address for the object
+	 * 
+	 * @param addr The address as an array of bytes
+	 * @throws AddressFormatException The array does not represent a valid
+	 *             network address
 	 */
-	protected NetworkAddress ( ) {
-		/* Do nothing... */
+	public abstract void setAddress ( byte[] addr ) throws AddressFormatException;
+
+	/**
+	 * Get the address as an array of bytes
+	 * 
+	 * @return The network address as an array of bytes
+	 */
+	public byte[] getAddress ( ) {
+		return this.address;
 	}
 
 	/**
-	 * Retrieve an address object based on the target host name
+	 * Resolve the network address to a name
 	 * 
-	 * @param host The host name of the system
-	 * @return A new NetworkAddress object
-	 * @throws ResolutionException Thrown when address lookup for the specified
-	 *             host name fails
+	 * @return The host name of the network address
+	 * @throws ResolutionException Name resolution failed
 	 */
-	public static NetworkAddress getIPv4Address ( String host ) throws ResolutionException {
-		NetworkAddress naddr = new NetworkAddress();
-		naddr.address = Resolver.getARecord( host )[0].getBytes();
-
-		return naddr;
+	public String getHost ( ) throws ResolutionException {
+		return Resolver.getPTRRecord( this.toString() )[0];
 	}
 
 	/**
-	 * Retrieve a new NetworkAddress object
+	 * Return the version of the IP standard implemented by this object
 	 * 
-	 * @param addr The IP version 4 address of the host
-	 * @return A new NetworkAddress object
-	 */
-	public static NetworkAddress getIPv4Address ( byte[] addr ) {
-		NetworkAddress naddr = new NetworkAddress();
-		naddr.address = addr;
-
-		return naddr;
-	}
-
-	/**
-	 * Get the IP version supported by this class
-	 * 
-	 * @return The IP version this class supports
+	 * @return The version of IP implemented by this class
 	 */
 	public int getIPVersion ( ) {
 		return this.ipVersion;
 	}
 
 	/**
-	 * Get the specified IP address of the host
+	 * Return the network address formatted as a string
 	 * 
-	 * @return A byte array representing the bytes of the address. The length
-	 *         of this depends on the IP address type.
-	 */
-	public byte[] getBytes ( ) {
-		return this.address;
-	}
-
-	/**
-	 * Get the host name. If it is not immediately accessible a reverse DNS
-	 * lookup is performed to determine the host name
-	 * 
-	 * @return The host name of the system or the IP as a string if a host name
-	 *         can not be found
-	 */
-	public String getHostName ( ) throws ResolutionException {
-		if ( this.host == null ) {
-			this.host = Resolver.getPTRRecord( this.toString() )[0];
-		}
-
-		return this.host;
-	}
-
-	/**
-	 * Return the IP address as a string
-	 * 
-	 * @return The IP address of the host as a string
+	 * @return The network address in proper format as a string
 	 */
 	@Override
-	public String toString ( ) {
-		String str = "";
-		String sep = "";
+	public abstract String toString ( );
 
-		switch ( this.address.length ) {
-		case 4:
-			sep = ".";
-			break;
-		case 16:
-			sep = ":";
-			break;
-		}
-
-		/* Chain the byte together into a string */
-		for ( byte b : this.address ) {
-			if ( str != "" ) {
-				str += sep;
-			}
-			str += String.valueOf( b & 0xFF );
-		}
-
-		return str;
-	}
 }
