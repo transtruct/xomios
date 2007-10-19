@@ -38,7 +38,7 @@ public class NetworkAddress {
 	 * Private constructor. Retrieve instances using getIPv<x>Address
 	 * functions.
 	 */
-	private NetworkAddress ( ) {
+	protected NetworkAddress ( ) {
 		/* Do nothing... */
 	}
 
@@ -52,7 +52,7 @@ public class NetworkAddress {
 	 */
 	public static NetworkAddress getIPv4Address ( String host ) throws ResolutionException {
 		NetworkAddress naddr = new NetworkAddress();
-		naddr.address = Resolver.getARecord( host )[0];
+		naddr.address = Resolver.getARecord( host )[0].getBytes();
 
 		return naddr;
 	}
@@ -85,7 +85,7 @@ public class NetworkAddress {
 	 * @return A byte array representing the bytes of the address. The length
 	 *         of this depends on the IP address type.
 	 */
-	public byte[] getAddress ( ) {
+	public byte[] getBytes ( ) {
 		return this.address;
 	}
 
@@ -98,22 +98,39 @@ public class NetworkAddress {
 	 */
 	public String getHostName ( ) throws ResolutionException {
 		if ( this.host == null ) {
-			this.host = Resolver.getPTRRecord( this.address )[0];
+			this.host = Resolver.getPTRRecord( this.toString() )[0];
 		}
 
 		return this.host;
 	}
 
 	/**
-	 * Return either the host name or the IP address as a string
+	 * Return the IP address as a string
 	 * 
-	 * @return The host name as a string if it is already cached internally. If
-	 *         the host name is not immediately accessible the IP address is
-	 *         returned as a string
+	 * @return The IP address of the host as a string
 	 */
 	@Override
 	public String toString ( ) {
-		return null;
-	}
+		String str = "";
+		String sep = "";
 
+		switch ( this.address.length ) {
+		case 4:
+			sep = ".";
+			break;
+		case 16:
+			sep = ":";
+			break;
+		}
+
+		/* Chain the byte together into a string */
+		for ( byte b : this.address ) {
+			if ( str != "" ) {
+				str += sep;
+			}
+			str += String.valueOf( b & 0xFF );
+		}
+
+		return str;
+	}
 }

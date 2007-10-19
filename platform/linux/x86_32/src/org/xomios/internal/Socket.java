@@ -8,6 +8,8 @@
 
 package org.xomios.internal;
 
+import org.xomios.connectivity.net.NetworkAddress;
+
 /**
  * Native socket implementation
  * 
@@ -120,6 +122,12 @@ public class Socket {
 	 * cannot be reopened.
 	 */
 	public native void close ( );
+
+	/**
+	 * 
+	 * @param addr
+	 */
+	public native void connect ( NetworkAddress addr, int port );
 
 	/**
 	 * Read a specified number of bytes from the socket connection
