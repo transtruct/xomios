@@ -17,7 +17,11 @@ package org.xomios.connectivity.net;
  */
 public class IPv4Address extends NetworkAddress {
 
-	protected final int maxport = 65535;
+	/**
+	 * TODO This belongs somewhere else -- ports are not associated with
+	 * IP addresses.
+	 */
+	protected static final int MAX_PORT = 65535;
 	protected int port = -1;
 
 	/**
@@ -145,7 +149,7 @@ public class IPv4Address extends NetworkAddress {
 	 * @see org.xomios.connectivity.net.NetworkPort#getMaxPortNumber()
 	 */
 	public int getMaxPortNumber ( ) {
-		return this.maxport;
+		return IPv4Address.MAX_PORT;
 	}
 
 	/**
