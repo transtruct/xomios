@@ -131,11 +131,16 @@ public class Socket {
 	 * @param addr A NetworkAddress
 	 */
 	public void connect ( NetworkAddress addr ) throws AddressFormatException, SocketException {
-		if ( !addr.portSet() ) {
-			throw new AddressFormatException( "Host not set in NetworkAddress object" );
+		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM ) && !addr.portSet() ) {
+			throw new AddressFormatException( "Host not set in NetworkAddress object but is required by specified socket type" );
 		}
 
-		this.connect( addr.getAddress(), addr.getPort(), this.socketType, this.addressFamily );
+		if ( addr.portSet() ) {
+			this.connect( addr.getAddress(), addr.getPort(), this.socketType, this.addressFamily );
+		}
+		else {
+			this.connect( addr.getAddress(), -1, this.socketType, this.addressFamily );
+		}
 	}
 
 	protected native void connect ( byte[] ip, int port, int socktype, int af );

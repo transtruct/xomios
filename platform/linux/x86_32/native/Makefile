@@ -18,6 +18,10 @@ all: $(OBJECTS)
 internal_Socket.o: internal_Socket.c
 	$(CC) $(CFLAGS) -o internal_Socket.o -c internal_Socket.c
 
+javah: 
+	javah -jni -classpath ../../../../build/linux/x86_32/classes/ org.xomios.internal.Socket
+	mv org_xomios_internal_Socket.h internal_Socket.h
+
 $(SOURCES):
 
 .PHONY: clean

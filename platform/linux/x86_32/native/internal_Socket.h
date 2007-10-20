@@ -39,6 +39,14 @@ JNIEXPORT void JNICALL Java_org_xomios_internal_Socket_close
 
 /*
  * Class:     org_xomios_internal_Socket
+ * Method:    connect
+ * Signature: ([BIII)V
+ */
+JNIEXPORT void JNICALL Java_org_xomios_internal_Socket_connect
+  (JNIEnv *, jobject, jbyteArray, jint, jint, jint);
+
+/*
+ * Class:     org_xomios_internal_Socket
  * Method:    recv
  * Signature: (I)Ljava/lang/String;
  */

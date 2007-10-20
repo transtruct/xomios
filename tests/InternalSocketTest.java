@@ -6,7 +6,8 @@
  * see the LICENSE file included in this distribution.
  */
 
-import org.xomios.internal.Socket;
+import org.xomios.internal.*;
+import org.xomios.connectivity.net.*;
 
 /**
  * Test applications to create and close a socket
@@ -19,16 +20,29 @@ public class InternalSocketTest {
 	/**
 	 * @param args None
 	 */
-	public static void main ( String[] args ) {
+	public static void main ( String[] args ) throws SocketException {
 
-		System.out.println( "Test started..." );
-		Socket s = new Socket();
-
-		System.out.println( "Socket created..." );
-		s.close();
-
-		System.out.println( "Socket closed..." );
-		System.out.println( "If this proceded without error or exception then the test passed" );
+		System.out.print( "Creating socket..." );
+		  Socket s = new Socket();
+		System.out.println( "done." );
+		
+		System.out.print( "Creating address object..." );
+		  IPv4Address addr = new IPv4Address( "208.79.80.50", 1322 );
+		System.out.println( "done." );
+		
+		System.out.print( "Making connection..." );
+		  s.connect( addr );
+		System.out.println( "done." );
+		
+		System.out.print( "Sending data..." );
+	 	  s.send(  "Hello world!\n" );
+		System.out.println( "done." );
+		
+		System.out.print( "Closing connection..." );
+		  s.close();
+		System.out.println( "done." );
+		
+		System.out.println( "\nIf this proceded without error or exception then the test passed" );
 
 	}
 }
