@@ -11,6 +11,6 @@
 
 #include "xomios.h"
 
-#define R_INTERNAL( x ) R( internal_##x )
+#define XOM_INTERNAL( x ) XOM( internal_##x )
 
 #endif

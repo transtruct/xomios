@@ -11,7 +11,7 @@
 /**
  * @see org.xomios.internal.File#open()
  */
-JNIEXPORT void JNICALL R_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, jint options ) {
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, jint options ) {
 	/* Make sure the options are sane by POSIX. */
 	int oflag = 0;
 	
@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL R_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, ji
 /**
  * @see org.xomios.internal.File#close()
  */
-JNIEXPORT void JNICALL R_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) {	
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) {	
 	jclass c_File = (*env)->GetObjectClass( env, this );
 	
 	/* Get the file descriptor. */
@@ -88,4 +88,18 @@ JNIEXPORT void JNICALL R_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) 
 	(*env)->SetIntField( env, this, f_File_fileDescriptor, (jint) -1 );
 	
 	return;
+}
+
+/**
+ * @see org.xomios.internal.File#_get(int)
+ */
+JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__I ) ( JNIEnv *env, jobject this, jint length ) {
+	return NULL;
+}
+
+/**
+ * @see org.xomios.internal.File#_get()
+ */
+JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__ ) ( JNIEnv *env, jobject this ) {
+	return NULL;
 }

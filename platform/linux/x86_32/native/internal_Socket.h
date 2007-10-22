@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define R_INTERNAL_SOCKET( x ) R_INTERNAL( Socket_##x )
+#define XOM_INTERNAL_SOCKET( x ) XOM_INTERNAL( Socket_##x )
 
 #define INTERNAL_SOCKET_AF_INET 10
 #define INTERNAL_SOCKET_AF_INET6 11
@@ -31,41 +31,41 @@
 /**
  * @see org.xomios.internal.Socket#createSocket()
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( createSocket ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( createSocket ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.Socket#close()
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( close ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( close ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.Socket#connect()
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( connect ) ( JNIEnv *, jobject, jbyteArray, jint, jint, jint );
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *, jobject, jbyteArray, jint, jint, jint );
 
 /**
  * @see org.xomios.internal.Socket#bind()
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( bind ) ( JNIEnv *, jobject, jbyteArray, jint, jint, jint );
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *, jobject, jbyteArray, jint, jint, jint );
 
 /**
  * @see org.xomios.internal.Socket#listen()
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( listen ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( listen ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.Socket#accept()
  */
-JNIEXPORT jobject JNICALL R_INTERNAL_SOCKET( accept ) ( JNIEnv *, jobject );
+JNIEXPORT jobject JNICALL XOM_INTERNAL_SOCKET( accept ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.Socket#recv()
  */
-JNIEXPORT jstring JNICALL R_INTERNAL_SOCKET( recv ) (JNIEnv *, jobject, jint);
+JNIEXPORT jstring JNICALL XOM_INTERNAL_SOCKET( recv ) (JNIEnv *, jobject, jint);
 
 /**
  * @see org.xomios.internal.Socket#send()
  */
-JNIEXPORT jint JNICALL R_INTERNAL_SOCKET( send ) ( JNIEnv *, jobject, jstring );
+JNIEXPORT jint JNICALL XOM_INTERNAL_SOCKET( send ) ( JNIEnv *, jobject, jstring );
 
 #endif

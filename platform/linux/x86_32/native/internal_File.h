@@ -16,7 +16,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#define R_INTERNAL_FILE( x ) R_INTERNAL( File_##x )
+#define XOM_INTERNAL_FILE( x ) XOM_INTERNAL( File_##x )
 
 #define INTERNAL_FILE_O_RDONLY 1
 #define INTERNAL_FILE_O_WRONLY 2
@@ -34,16 +34,21 @@
 /**
  * @see org.xomios.internal.File#_open()
  */
-JNIEXPORT void JNICALL R_INTERNAL_FILE( _1open ) ( JNIEnv *, jobject, jint );
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *, jobject, jint );
 
 /**
  * @see org.xomios.internal.File#_close()
  */
-JNIEXPORT void JNICALL R_INTERNAL_FILE( _1close ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.File#_get(int)
  */
+JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__I ) ( JNIEnv *, jobject, jint );
 
+/**
+ * @see org.xomios.internal.File#_get()
+ */
+JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__ ) ( JNIEnv *, jobject );
 
 #endif

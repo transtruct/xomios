@@ -57,7 +57,7 @@ int getNativeSocketType ( int socketType ) {
  * Method:    createSocket
  * Signature: ()V
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( createSocket ) ( JNIEnv *env, jobject obj ) {
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( createSocket ) ( JNIEnv *env, jobject obj ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 	
@@ -97,7 +97,7 @@ JNIEXPORT void JNICALL R_INTERNAL_SOCKET( createSocket ) ( JNIEnv *env, jobject 
  * Method:    close
  * Signature: ()V
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( close ) ( JNIEnv *env, jobject obj ) {
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( close ) ( JNIEnv *env, jobject obj ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 	
@@ -122,7 +122,7 @@ JNIEXPORT void JNICALL R_INTERNAL_SOCKET( close ) ( JNIEnv *env, jobject obj ) {
  * Method:    connect
  * Signature: ([BIII)V
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj, jbyteArray ip, 
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj, jbyteArray ip, 
 								jint port, jint socktype, jint addressfamily ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
@@ -185,7 +185,7 @@ JNIEXPORT void JNICALL R_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj, 
  * Method:    bind
  * Signature: ([BIII)V
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, jbyteArray ip, jint port, jint socktype, jint addressfamily ) {
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, jbyteArray ip, jint port, jint socktype, jint addressfamily ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 
@@ -248,7 +248,7 @@ JNIEXPORT void JNICALL R_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, jby
  * Method:    listen
  * Signature: ()V
  */
-JNIEXPORT void JNICALL R_INTERNAL_SOCKET( listen ) (JNIEnv *env, jobject obj ) {
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( listen ) (JNIEnv *env, jobject obj ) {
 	/* Our favorite classes */
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
@@ -277,7 +277,7 @@ JNIEXPORT void JNICALL R_INTERNAL_SOCKET( listen ) (JNIEnv *env, jobject obj ) {
  * Method:    accept
  * Signature: ()Lorg/xomios/internal/Socket;
  */
-JNIEXPORT jobject JNICALL R_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject obj ) {
+JNIEXPORT jobject JNICALL XOM_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject obj ) {
 	/* get the classes we need */
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
@@ -340,7 +340,7 @@ JNIEXPORT jobject JNICALL R_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject obj 
  * Method:    recv
  * Signature: (I)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL R_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj, jint count ) {
+JNIEXPORT jstring JNICALL XOM_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj, jint count ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 
@@ -368,7 +368,7 @@ JNIEXPORT jstring JNICALL R_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj, 
  * Method:    send
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL R_INTERNAL_SOCKET( send ) ( JNIEnv *env, jobject obj, jstring data ) {
+JNIEXPORT jint JNICALL XOM_INTERNAL_SOCKET( send ) ( JNIEnv *env, jobject obj, jstring data ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 
