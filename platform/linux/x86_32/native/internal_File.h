@@ -13,8 +13,10 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 #define XOM_INTERNAL_FILE( x ) XOM_INTERNAL( File_##x )
 
@@ -42,13 +44,13 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *, jobject, jint );
 JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *, jobject );
 
 /**
- * @see org.xomios.internal.File#_get(int)
+ * @see org.xomios.internal.File#_read()
  */
-JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__I ) ( JNIEnv *, jobject, jint );
+JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *, jobject, jint );
 
 /**
- * @see org.xomios.internal.File#_get()
+ * @see org.xomios.internal.File#_write()
  */
-JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__ ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *, jobject, jstring );
 
 #endif

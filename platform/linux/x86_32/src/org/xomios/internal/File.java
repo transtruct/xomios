@@ -180,31 +180,51 @@ public class File {
 	 * 
 	 * @return The contents of the file.
 	 */
-	public String get ( int length ) throws IOException {
+	public String read ( int length ) throws IOException {
 		if ( !this.isOpen() ) {
 			throw new InvalidStateException( "closed" );
 		}
-		return this._get( length );
+		return this._read( length );
 	}
 
-	public native String _get ( int length );
+	private native String _read ( int length );
 
 	/**
 	 * Reads the entire file into memory.
 	 * 
 	 * @return The contents of the file.
 	 */
-	public String get ( ) throws IOException {
+	public String read ( ) throws IOException {
+		StringBuffer buffer = new StringBuffer();
+		String data;
+
+		/* Read from the file in 1024-byte segments. */
+		while ( ( data = this.read( 1024 ) ).length() > 0 ) {
+			buffer.append( data );
+		}
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Writes the specified data to the file.
+	 * 
+	 * @param data The data to write.
+	 * @throws IOException
+	 */
+	public void write ( String data ) throws IOException {
 		if ( !this.isOpen() ) {
 			throw new InvalidStateException( "closed" );
 		}
-		return this._get();
+		this._write( data );
 	}
 
-	public native String _get ( );
+	private native void _write ( String data );
 
 	/**
 	 * Closes an open file descriptor to the file.
+	 * 
+	 * @throws IOException
 	 */
 	public void close ( ) throws IOException {
 		if ( !this.isOpen() ) {
@@ -213,6 +233,6 @@ public class File {
 		this._close();
 	}
 
-	public native void _close ( );
+	private native void _close ( );
 
 }

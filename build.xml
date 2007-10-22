@@ -101,7 +101,7 @@
 	<target name="jar" depends="compile,init">
 		<mkdir dir="${dir.build.output.jar}" />
 		<jar destfile="${dir.build.output.jar}/xomios-${build.platform}-${build.arch}.jar">
-			<fileset dir="${dir.output.lib}" />
+			<fileset dir="${dir.build.output.lib}" />
 		</jar>
 	</target>
 

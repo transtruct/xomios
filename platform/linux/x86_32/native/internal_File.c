@@ -48,17 +48,18 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 	jmethodID m_File_getPath = (*env)->GetMethodID( env, c_File, "getPath", "()Ljava/lang/String;" );
 	
 	jstring s_path = (jstring) (*env)->CallObjectMethod( env, this, m_File_getPath );
-	jbyte *path = (jbyte *) (*env)->GetStringUTFChars( env, s_path, NULL );
+	const jbyte *path = (const jbyte *) (*env)->GetStringUTFChars( env, s_path, NULL );
 	
 	/* Open the file. */
 	int fd = open( (char *) path, oflag );
 	if (fd == -1) {
 		/* Some error occurred, will check errno()/strerror_r() for details later. */
 		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
+		(*env)->ReleaseStringUTFChars( env, s_path, (const char *)path );
 		(*env)->ThrowNew( env, c_AccessException, "file could not be opened" );
-		
-		return;
 	}
+	
+	(*env)->ReleaseStringUTFChars( env, s_path, (const char *)path );
 	
 	/* Locate and assign the internal file descriptor. */
 	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
@@ -81,8 +82,6 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this 
 	if (close(fd) == -1) {
 		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
 		(*env)->ThrowNew( env, c_AccessException, "file could not be closed" );
-		
-		return;
 	}
 	
 	(*env)->SetIntField( env, this, f_File_fileDescriptor, (jint) -1 );
@@ -91,15 +90,45 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this 
 }
 
 /**
- * @see org.xomios.internal.File#_get(int)
+ * @see org.xomios.internal.File#_read()
  */
-JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__I ) ( JNIEnv *env, jobject this, jint length ) {
-	return NULL;
+JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject this, jint length ) {
+	char buffer[length + 1];
+	jclass c_File = (*env)->GetObjectClass( env, this );
+	
+	/* Get the file descriptor. */
+	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
+	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	
+	/* Wipe the buffer. */
+	memset( buffer, '\0', length + 1 );
+	
+	if (read( fd, buffer, length ) == -1) {
+		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
+		(*env)->ThrowNew( env, c_AccessException, "file could not be read" );
+	}
+	
+	return (*env)->NewStringUTF( env, buffer );
 }
 
 /**
- * @see org.xomios.internal.File#_get()
+ * @see org.xomios.internal.File#_write()
  */
-JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1get__ ) ( JNIEnv *env, jobject this ) {
-	return NULL;
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this, jstring data ) {
+	const jbyte *buffer = (const jbyte *) (*env)->GetStringUTFChars( env, data, NULL );
+	jclass c_File = (*env)->GetObjectClass( env, this );
+	
+	/* Get the file descriptor. */
+	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
+	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	
+	if (write(fd, (void *)buffer, (*env)->GetStringUTFLength( env, data )) == -1) {
+		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
+		(*env)->ReleaseStringUTFChars( env, data, (const char *)buffer );
+		(*env)->ThrowNew( env, c_AccessException, "file could not be written" );
+	}
+	
+	(*env)->ReleaseStringUTFChars( env, data, (const char *)buffer );
+	
+	return;
 }

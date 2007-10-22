@@ -8,25 +8,35 @@
 
 import java.util.EnumSet;
 
+import org.xomios.IOException;
 import org.xomios.internal.*;
 
 /**
- * LULZ!
+ * Tests the org.xomios.internal.File class.
  *
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
 public class InternalFileTest {
 
-	/**
-	 * @param args None
-	 */
-	public static void main ( String[] args ) {
+	public static void main ( String[] args ) throws IOException {
 		System.out.println( "Beginning tests." );
-		System.out.println( "Creating new File..." );
-		File f = new File( "/etc/passwd" );
+		System.out.println( "Creating new file object (" + args[0] + ")..." );
+		File f = new File( args[0] );
 		System.out.println( "Opening file with O_RDONLY..." );
 		f.open( File.O_RDONLY );
+		System.out.println( "Reading 32 bytes from file..." );
+		String s = f.read(32);
+		System.out.println(s);
+		System.out.println( "Reading remainder of file..." );
+		s = f.read();
+		System.out.println(s);
+		System.out.println( "Closing file..." );
+		f.close();
+		System.out.println( "Opening file with O_WRONLY | O_APPEND... ");
+		f.open( File.O_WRONLY | File.O_APPEND );
+		System.out.println( "Writing data to file." );
+		f.write( "So, I herd u liek mudkipz.\n" );
 		System.out.println( "Closing file..." );
 		f.close();
 		System.out.println( "Testing concluded." );
