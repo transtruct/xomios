@@ -28,7 +28,7 @@ public class ServerTest {
 		System.out.println( "done." );
 		
 		System.out.print( "Creating address object..." );
-		  IPv4Address addr = new IPv4Address( "192.168.0.3", Integer.valueOf( args[0] ) );
+		  IPv4Address addr = new IPv4Address( "127.0.0.1", Integer.valueOf( args[0] ) );
 		System.out.println( "done." );
 		
 		System.out.print( "Binding connection..." );

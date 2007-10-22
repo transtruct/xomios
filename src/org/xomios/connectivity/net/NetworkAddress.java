@@ -8,7 +8,6 @@
 
 package org.xomios.connectivity.net;
 
-
 /**
  * A network address. This can be either IP version 4 or 6 and may or may not
  * be associated with a port number
@@ -28,7 +27,8 @@ public abstract class NetworkAddress implements NetworkPort {
 	 * @param host The host IP as a string
 	 * @throws AddressFormatException the address is not properly formatted
 	 */
-	public abstract void setAddress ( String host ) throws AddressFormatException;
+	public abstract void setAddress ( String host )
+			throws AddressFormatException;
 
 	/**
 	 * Sets the address for the object
@@ -37,7 +37,8 @@ public abstract class NetworkAddress implements NetworkPort {
 	 * @throws AddressFormatException The array does not represent a valid
 	 *             network address
 	 */
-	public abstract void setAddress ( byte[] addr ) throws AddressFormatException;
+	public abstract void setAddress ( byte[] addr )
+			throws AddressFormatException;
 
 	/**
 	 * Get the address as an array of bytes

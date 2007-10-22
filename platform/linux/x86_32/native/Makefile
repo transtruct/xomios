@@ -6,8 +6,8 @@
 
 # Makefile for Linux x86 32-bit architecture
 
-OBJECTS = internal_Socket.o
-SOURCES = internal_Socket.c
+OBJECTS = internal_Socket.o internal_File.o
+SOURCES = internal_Socket.c internal_File.c
 
 CFLAGS += -Wall -fPIC -I/usr/lib/jvm/java-6-sun/include/ -I/usr/lib/jvm/java-6-sun/include/linux/
 LIBS = -Wall -shared -fPIC
@@ -17,6 +17,9 @@ all: $(OBJECTS)
 
 internal_Socket.o: internal_Socket.c
 	$(CC) $(CFLAGS) -o internal_Socket.o -c internal_Socket.c
+
+internal_File.o: internal_File.c
+	$(CC) $(CFLAGS) -o internal_File.o -c internal_File.c
 
 javah: 
 	javah -jni -classpath ../../../../build/linux/x86_32/classes/ org.xomios.internal.Socket
