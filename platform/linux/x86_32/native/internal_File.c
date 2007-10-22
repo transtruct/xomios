@@ -9,7 +9,7 @@
 #include "internal_File.h"
 
 /**
- * @see org.xomios.internal.File#open()
+ * @see org.xomios.internal.File#_open()
  */
 JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, jint options ) {
 	/* Make sure the options are sane by POSIX. */
@@ -69,27 +69,6 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 }
 
 /**
- * @see org.xomios.internal.File#close()
- */
-JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) {	
-	jclass c_File = (*env)->GetObjectClass( env, this );
-	
-	/* Get the file descriptor. */
-	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
-	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
-	
-	/* Close the file. */
-	if (close(fd) == -1) {
-		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
-		(*env)->ThrowNew( env, c_AccessException, "file could not be closed" );
-	}
-	
-	(*env)->SetIntField( env, this, f_File_fileDescriptor, (jint) -1 );
-	
-	return;
-}
-
-/**
  * @see org.xomios.internal.File#_read()
  */
 JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject this, jint length ) {
@@ -129,6 +108,63 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this,
 	}
 	
 	(*env)->ReleaseStringUTFChars( env, data, (const char *)buffer );
+	
+	return;
+}
+
+/**
+ * @see org.xomios.internal.File#_seek()
+ */
+JNIEXPORT jint JNICALL XOM_INTERNAL_FILE( _1seek ) ( JNIEnv *env, jobject this, jint offset, jobject o_whence ) {
+	jclass c_File = (*env)->GetObjectClass( env, this );
+	jclass c_File_Seek = (*env)->GetObjectClass( env, o_whence );
+	
+	/* How are we going to seek? */
+	jfieldID f_File_Seek_CURRENT = (*env)->GetStaticFieldID( env, c_File_Seek, "CURRENT", "Lorg/xomios/internal/File$Seek;" );
+	jfieldID f_File_Seek_END = (*env)->GetStaticFieldID( env, c_File_Seek, "END", "Lorg/xomios/internal/File$Seek;" );
+	
+	int whence;
+	off_t new_offset;
+	
+	if ((*env)->IsSameObject( env, o_whence, (*env)->GetStaticObjectField( env, c_File_Seek, f_File_Seek_CURRENT ) ) == JNI_TRUE) {
+		whence = SEEK_CUR;
+	}
+	else if ((*env)->IsSameObject( env, o_whence, (*env)->GetStaticObjectField( env, c_File_Seek, f_File_Seek_END ) ) == JNI_TRUE) {
+		whence = SEEK_END;
+	}
+	else /* o_whence == Seek.SET or something went disastrously wrong. */ {
+		whence = SEEK_SET;
+	}
+	
+	/* Get the file descriptor. */
+	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
+	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	
+	if ((new_offset = lseek(fd, (off_t)offset, whence)) == (off_t)-1) {
+		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
+		(*env)->ThrowNew( env, c_AccessException, "could not seek in file" );
+	}
+	
+	return offset;
+}
+
+/**
+ * @see org.xomios.internal.File#_close()
+ */
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) {	
+	jclass c_File = (*env)->GetObjectClass( env, this );
+	
+	/* Get the file descriptor. */
+	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
+	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	
+	/* Close the file. */
+	if (close(fd) == -1) {
+		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
+		(*env)->ThrowNew( env, c_AccessException, "file could not be closed" );
+	}
+	
+	(*env)->SetIntField( env, this, f_File_fileDescriptor, (jint) -1 );
 	
 	return;
 }

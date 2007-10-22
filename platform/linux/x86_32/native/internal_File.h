@@ -49,6 +49,11 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *, jobject );
 JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *, jobject, jint );
 
 /**
+ * @see org.xomios.internal.File#_seek()
+ */
+JNIEXPORT jint JNICALL XOM_INTERNAL_FILE( _1seek ) ( JNIEnv *, jobject, jint, jobject );
+
+/**
  * @see org.xomios.internal.File#_write()
  */
 JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *, jobject, jstring );

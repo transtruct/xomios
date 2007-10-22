@@ -121,15 +121,38 @@ public class File {
 	public static final int O_TRUNC = 0x1000;
 
 	/**
-	 * The path to the file to access.
+	 * Offsets used for seeking within a file.
 	 * 
-	 * TODO Implement this as a FileLocation.
+	 * @author Christopher Thunes <cthunes@xomios.brewtab.com>
+	 * @author Noah Fontes <nfontes@xomios.brewtab.com>
 	 */
+	public enum Seek {
+		/**
+		 * Set the file offset to <code>offset</code>.
+		 */
+		SET,
+
+		/**
+		 * Set the file offset to the current position plus <code>offset</code>.
+		 */
+		CURRENT,
+
+		/**
+		 * Set the file offset to the end of the file plus <code>offset</code>.
+		 */
+		END
+	}
+
+	/**
+	 * The path to the file to access.
+	 */
+	/* TODO Implement this as a FileLocation. */
 	private final String path;
 
 	/**
 	 * Whether the file is currently opened.
 	 */
+	/* TODO Possibly implement this using a FileDescriptor class. */
 	private int fileDescriptor = -1;
 
 	/**
@@ -163,6 +186,7 @@ public class File {
 	 * Opens a file descriptor to the given file with the specified options.
 	 * 
 	 * @param options A bit mask of options to use to open the file.
+	 * @throws IOException
 	 */
 	public void open ( int options ) throws IOException {
 		if ( this.isOpen() ) {
@@ -171,12 +195,13 @@ public class File {
 		this._open( options );
 	}
 
-	private native void _open ( int options );
+	private native void _open ( int options ) throws IOException;
 
 	/**
 	 * Reads a specified number of bytes from the given file.
 	 * 
 	 * @param length The number of bytes to read.
+	 * @throws IOException
 	 * 
 	 * @return The contents of the file.
 	 */
@@ -187,11 +212,12 @@ public class File {
 		return this._read( length );
 	}
 
-	private native String _read ( int length );
+	private native String _read ( int length ) throws IOException;
 
 	/**
 	 * Reads the entire file into memory.
 	 * 
+	 * @throws IOException
 	 * @return The contents of the file.
 	 */
 	public String read ( ) throws IOException {
@@ -219,7 +245,39 @@ public class File {
 		this._write( data );
 	}
 
-	private native void _write ( String data );
+	private native void _write ( String data ) throws IOException;
+
+	/**
+	 * Seeks to the specified offset in the file relative to the beginning of
+	 * the file.
+	 * 
+	 * @param offset The offset to which the file cursor should be moved.
+	 * 
+	 * @return The new offset in the file.
+	 */
+	public int seek ( int offset ) throws IOException {
+		return this.seek( offset, Seek.SET );
+	}
+
+	/**
+	 * Seeks to the specified offset in the file relative to the given offset
+	 * constant.
+	 * 
+	 * @param offset The offset to which the file cursor should be moved.
+	 * @param whence The position in the file from which the cursor should be
+	 *            moved.
+	 * 
+	 * @return The new offset in the file.
+	 */
+	/* TODO Consider implementing this using an Offset type. */
+	public int seek ( int offset, Seek whence ) throws IOException {
+		if ( !this.isOpen() ) {
+			throw new InvalidStateException( "closed" );
+		}
+		return this._seek( offset, whence );
+	}
+
+	private native int _seek ( int offset, Seek whence ) throws IOException;
 
 	/**
 	 * Closes an open file descriptor to the file.
@@ -233,6 +291,6 @@ public class File {
 		this._close();
 	}
 
-	private native void _close ( );
+	private native void _close ( ) throws IOException;
 
 }
