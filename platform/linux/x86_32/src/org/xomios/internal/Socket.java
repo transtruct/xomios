@@ -8,10 +8,10 @@
 
 package org.xomios.internal;
 
+import org.xomios.connectivity.InvalidStateException;
 import org.xomios.connectivity.net.AddressFormatException;
 import org.xomios.connectivity.net.NetworkAddress;
 import org.xomios.connectivity.net.SocketException;
-import org.xomios.connectivity.net.SocketStateException;
 
 /**
  * Native socket implementation
@@ -142,8 +142,10 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void connect ( NetworkAddress addr ) throws AddressFormatException, SocketException {
-		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM ) && !addr.portSet() ) {
+	public void connect ( NetworkAddress addr ) throws AddressFormatException,
+			SocketException {
+		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM )
+				&& !addr.portSet() ) {
 			throw new AddressFormatException( "Host not set in NetworkAddress object but is required by specified socket type" );
 		}
 
@@ -169,8 +171,10 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void bind ( NetworkAddress addr ) throws AddressFormatException, SocketException {
-		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM ) && !addr.portSet() ) {
+	public void bind ( NetworkAddress addr ) throws AddressFormatException,
+			SocketException {
+		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM )
+				&& !addr.portSet() ) {
 			throw new AddressFormatException( "Host not set in NetworkAddress object but is required by specified socket type" );
 		}
 
@@ -235,16 +239,16 @@ public class Socket {
 	 * 
 	 * @return The NetworkAddress corresponding to the remote end of this
 	 *         connection
-	 * @throws SocketStateException the socket is not in a state that
+	 * @throws InvalidStateException the socket is not in a state that
 	 *             corresponds with a remote address. i.e. this socket is
 	 *             locally bound and is listening for incoming connections
 	 */
-	public NetworkAddress getRemoteAddress ( ) throws SocketStateException {
+	public NetworkAddress getRemoteAddress ( ) throws InvalidStateException {
 		if ( this.remoteAddress != null ) {
 			return this.remoteAddress;
 		}
 		else {
-			throw new SocketStateException( "This socket does not have a logical remote address" );
+			throw new InvalidStateException( "This socket does not have a logical remote address" );
 		}
 	}
 
