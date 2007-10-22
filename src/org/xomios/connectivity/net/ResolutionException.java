@@ -15,7 +15,7 @@ package org.xomios.connectivity.net;
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
-public class ResolutionException extends Exception {
+public class ResolutionException extends RuntimeException {
 
 	protected final static long serialVersionUID = 7890123789234L;
 

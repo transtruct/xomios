@@ -17,6 +17,8 @@ package org.xomios.connectivity.net;
  */
 public interface NetworkPort {
 
+	public static final int MAX_PORT = 65535;
+
 	/**
 	 * Set the port number for this class
 	 * 

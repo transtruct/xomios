@@ -18,8 +18,12 @@ package org.xomios.connectivity.net;
 public class IPv4Address extends NetworkAddress {
 
 	/**
-	 * TODO This belongs somewhere else -- ports are not associated with
-	 * IP addresses.
+	 * TODO This belongs somewhere else -- ports are not associated with IP
+	 * addresses.
+	 * 
+	 * Fair enough but I couldn't come up with a better way to have socket
+	 * handle it. Let me know if you think of anything because I really don't
+	 * like this either.
 	 */
 	protected static final int MAX_PORT = 65535;
 	protected int port = -1;

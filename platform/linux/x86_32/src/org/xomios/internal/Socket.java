@@ -11,6 +11,7 @@ package org.xomios.internal;
 import org.xomios.connectivity.net.AddressFormatException;
 import org.xomios.connectivity.net.NetworkAddress;
 import org.xomios.connectivity.net.SocketException;
+import org.xomios.connectivity.net.SocketStateException;
 
 /**
  * Native socket implementation
@@ -71,12 +72,20 @@ public class Socket {
 	protected int addressFamily;
 	protected int socketType;
 
+	/* The size of the connection queue */
+	protected int backlog = 0;
+
 	/**
 	 * The socket file descriptor. This should never be accessed from within
 	 * Java and only from C.
 	 */
 	protected int cSocket;
 
+	/**
+	 * This points to a NetworkAddress object describing the remote host after
+	 * a connect or in a Socket object returned by accept()
+	 */
+	protected NetworkAddress remoteAddress = null;
 
 	/**
 	 * Create a new socket object
@@ -88,9 +97,6 @@ public class Socket {
 		/* Just copy these in and we let the createSocket function handle it */
 		this.addressFamily = addressFamily;
 		this.socketType = sockType;
-
-		/* Create the socket file descriptor */
-		this.createSocket();
 	}
 
 	/**
@@ -112,12 +118,14 @@ public class Socket {
 		this( Socket.AF_INET, Socket.SOCK_STREAM );
 	}
 
+	protected Socket ( boolean dummy ) {
+
+	}
+
 	/**
-	 * Get a new descriptor for a low level socket connection
-	 * 
-	 * @return The file descriptor of the socket
+	 * Create the new descriptor for a low level socket connection
 	 */
-	private native void createSocket ( );
+	public native void createSocket ( );
 
 	/**
 	 * Destroy the internal socket connection. After this is called the socket
@@ -129,6 +137,10 @@ public class Socket {
 	 * Connect the socket to the remove host specified by addr
 	 * 
 	 * @param addr A NetworkAddress
+	 * @throws AddressFormatException the specified address is incomplete. i.e.
+	 *             You have specified a SOCK_STREAM socket but the port is not
+	 *             set as part of the NetworkAddress
+	 * @throws SocketException An internal error has occurred while connecting
 	 */
 	public void connect ( NetworkAddress addr ) throws AddressFormatException, SocketException {
 		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM ) && !addr.portSet() ) {
@@ -143,8 +155,63 @@ public class Socket {
 		}
 	}
 
+	/**
+	 * Performs the actual connection operation at the native level
+	 */
 	protected native void connect ( byte[] ip, int port, int socktype, int af );
 
+	/**
+	 * Bind the socket to the specified host and port
+	 * 
+	 * @param addr A NetworkAddress
+	 * @throws AddressFormatException the specified address is incomplete. i.e.
+	 *             You have specified a SOCK_STREAM socket but the port is not
+	 *             set as part of the NetworkAddress
+	 * @throws SocketException An internal error has occurred while connecting
+	 */
+	public void bind ( NetworkAddress addr ) throws AddressFormatException, SocketException {
+		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM ) && !addr.portSet() ) {
+			throw new AddressFormatException( "Host not set in NetworkAddress object but is required by specified socket type" );
+		}
+
+		if ( addr.portSet() ) {
+			this.bind( addr.getAddress(), addr.getPort(), this.socketType, this.addressFamily );
+		}
+		else {
+			this.bind( addr.getAddress(), -1, this.socketType, this.addressFamily );
+		}
+	}
+
+	/**
+	 * Perform the actual bind operation at the native level
+	 */
+	protected native void bind ( byte[] ip, int port, int socktype, int af );
+
+	/**
+	 * Set the socket as actively listening for incoming connections
+	 * 
+	 * @param backlog Size of the queue of connections waiting
+	 * @throws SocketException an internal error has occurred
+	 */
+	public void listen ( int backlog ) throws SocketException {
+		this.backlog = backlog;
+		this.listen();
+	}
+
+	/**
+	 * Perform the listen operation at a low level
+	 */
+	protected native void listen ( ) throws SocketException;
+
+	/**
+	 * Return the first connection from the connection queue.
+	 * 
+	 * @return A new socket object used to communicate with the new remote
+	 *         client
+	 * @throws SocketException An error has occurred while accepting the
+	 *             connection
+	 */
+	public native Socket accept ( ) throws SocketException;
 
 	/**
 	 * Read a specified number of bytes from the socket connection
@@ -161,6 +228,25 @@ public class Socket {
 	 * @return Number of bytes transmitted
 	 */
 	public native int send ( String data );
+
+	/**
+	 * Returns the NetworkAddress associated with the remote end of this socket
+	 * object
+	 * 
+	 * @return The NetworkAddress corresponding to the remote end of this
+	 *         connection
+	 * @throws SocketStateException the socket is not in a state that
+	 *             corresponds with a remote address. i.e. this socket is
+	 *             locally bound and is listening for incoming connections
+	 */
+	public NetworkAddress getRemoteAddress ( ) throws SocketStateException {
+		if ( this.remoteAddress != null ) {
+			return this.remoteAddress;
+		}
+		else {
+			throw new SocketStateException( "This socket does not have a logical remote address" );
+		}
+	}
 
 	static {
 		/* Load the native library */

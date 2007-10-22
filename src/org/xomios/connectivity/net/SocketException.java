@@ -15,7 +15,7 @@ package org.xomios.connectivity.net;
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
-public class SocketException extends Exception {
+public class SocketException extends RuntimeException {
 
 	protected static final long serialVersionUID = 75821340713933L;
 
