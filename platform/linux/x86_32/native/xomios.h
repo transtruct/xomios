@@ -13,7 +13,4 @@
 
 #define XOM( x ) Java_org_xomios_##x
 
-#define XOM_OVERLOAD( x, y ) x##__##y
-#define XOM_OVERLOAD_DEFAULT( x ) x##__
-
 #endif
