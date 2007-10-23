@@ -255,8 +255,8 @@ public class File {
 	 * 
 	 * @return The new offset in the file.
 	 */
-	public int seek ( int offset ) throws IOException {
-		return this.seek( offset, Seek.SET );
+	public long setOffset ( long offset ) throws IOException {
+		return this.setOffset( offset, Seek.SET );
 	}
 
 	/**
@@ -270,14 +270,31 @@ public class File {
 	 * @return The new offset in the file.
 	 */
 	/* TODO Consider implementing this using an Offset type. */
-	public int seek ( int offset, Seek whence ) throws IOException {
+	public long setOffset ( long offset, Seek whence ) throws IOException {
 		if ( !this.isOpen() ) {
 			throw new InvalidStateException( "closed" );
 		}
-		return this._seek( offset, whence );
+		return this._setOffset( offset, whence );
 	}
 
-	private native int _seek ( int offset, Seek whence ) throws IOException;
+	private native long _setOffset ( long offset, Seek whence )
+			throws IOException;
+
+	/**
+	 * Retrieves the current cursor offset in the file.
+	 * 
+	 * @return The current cursor offset.
+	 * @throws IOException
+	 */
+	/* TODO Consider implementing this using an Offset type. */
+	public long getOffset ( ) throws IOException {
+		if ( !this.isOpen() ) {
+			throw new InvalidStateException( "closed" );
+		}
+		return this._getOffset();
+	}
+
+	private native long _getOffset ( ) throws IOException;
 
 	/**
 	 * Closes an open file descriptor to the file.

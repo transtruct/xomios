@@ -9,14 +9,21 @@
 #ifndef _INTERNAL_FILE_H
 #define _INTERNAL_FILE_H
 
+#include "xomios_platform.h"
+
+/* TODO Determine other platforms that need some or all of these flags. */
+#if defined(XOM_PLATFORM_GNU_LINUX)
+# define _GNU_SOURCE
+# define _LARGEFILE_SOURCE
+# define _LARGEFILE64_SOURCE
+# define _FILE_OFFSET_BITS 64 /* Provide 64-bit interfaces to file functions. */
+#endif
+
 #include "internal.h"
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <stdio.h>
 
 #define XOM_INTERNAL_FILE( x ) XOM_INTERNAL( File_##x )
 
@@ -49,9 +56,17 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *, jobject );
 JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *, jobject, jint );
 
 /**
- * @see org.xomios.internal.File#_seek()
+ * @see org.xomios.internal.File#_setOffset()
  */
-JNIEXPORT jint JNICALL XOM_INTERNAL_FILE( _1seek ) ( JNIEnv *, jobject, jint, jobject );
+JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *, jobject, jlong, jobject );
+
+/**
+ * (This is a fast implementation of setOffset( 0, Seek.CURRENT ) and is
+ * functionally equivalent.)
+ * 
+ * @see org.xomios.internal.File#_getOffset()
+ */
+JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1getOffset ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.File#_write()
