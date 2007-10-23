@@ -8,6 +8,8 @@
 
 import org.xomios.internal.*;
 import org.xomios.connectivity.net.*;
+import org.xomios.connectivity.*;
+import org.xomios.*;
 
 /**
  * Test socket server
@@ -20,7 +22,7 @@ public class ServerTest {
 	/**
 	 * @param args None
 	 */
-	public static void main ( String[] args ) throws InterruptedException {
+	public static void main ( String[] args ) throws InterruptedException, IOException {
 
 		System.out.print( "Creating socket..." );
 		  Socket s = new Socket();
@@ -28,11 +30,12 @@ public class ServerTest {
 		System.out.println( "done." );
 		
 		System.out.print( "Creating address object..." );
-		  IPv4Address addr = new IPv4Address( "127.0.0.1", Integer.valueOf( args[0] ) );
+		  IPv4Address addr = new IPv4Address( "127.0.0.1" );
+		  TCPEndPoint lhost = new TCPEndPoint( addr, Integer.valueOf( args[0] ) );
 		System.out.println( "done." );
 		
 		System.out.print( "Binding connection..." );
-		  s.bind( addr );
+		  s.bind( lhost );
 		System.out.println( "done." );
 		
 		System.out.print( "Listening for connection..." );
@@ -41,10 +44,14 @@ public class ServerTest {
 		System.out.println( "done." );
 		
 		System.out.println( "Host:" );
-		  System.out.println( "\tRemote host: " + c.getRemoteAddress().toString());
+		  System.out.println( "\tRemote host: " + c.getAttachedHost().getNetworkAddress().toString() );
 		
 		System.out.println( "Waiting for message..." );
 		  System.out.println( "\t" + c.recv( 100 ) );
+		System.out.println( "done." );
+		
+		System.out.print( "Sending message back to client..." );
+		  c.send( "Hai2u2" );
 		System.out.println( "done." );
 		
 		System.out.print( "Closing client connection..." );

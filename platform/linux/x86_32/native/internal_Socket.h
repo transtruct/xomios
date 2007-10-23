@@ -41,12 +41,12 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( close ) ( JNIEnv *, jobject );
 /**
  * @see org.xomios.internal.Socket#connect()
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *, jobject, jbyteArray, jint, jint, jint );
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *, jobject, jint );
 
 /**
  * @see org.xomios.internal.Socket#bind()
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *, jobject, jbyteArray, jint, jint, jint );
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *, jobject, jint );
 
 /**
  * @see org.xomios.internal.Socket#listen()

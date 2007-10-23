@@ -10,8 +10,12 @@ package org.xomios.internal;
 
 import org.xomios.connectivity.InvalidStateException;
 import org.xomios.connectivity.net.AddressFormatException;
-import org.xomios.connectivity.net.NetworkAddress;
+import org.xomios.connectivity.net.ConnectionEndPoint;
+import org.xomios.connectivity.net.NetworkPort;
 import org.xomios.connectivity.net.SocketException;
+import org.xomios.connectivity.net.TCPEndPoint;
+import org.xomios.connectivity.net.UDPEndPoint;
+
 
 /**
  * Native socket implementation
@@ -82,10 +86,10 @@ public class Socket {
 	protected int cSocket;
 
 	/**
-	 * This points to a NetworkAddress object describing the remote host after
-	 * a connect or in a Socket object returned by accept()
+	 * This points to a ConnectionEndPoint object describing the attached host
+	 * after a connect/bind or in a Socket object returned by accept()
 	 */
-	protected NetworkAddress remoteAddress = null;
+	protected ConnectionEndPoint attachedHost = null;
 
 	/**
 	 * Create a new socket object
@@ -142,25 +146,23 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void connect ( NetworkAddress addr ) throws AddressFormatException,
-			SocketException {
-		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM )
-				&& !addr.portSet() ) {
-			throw new AddressFormatException( "Host not set in NetworkAddress object but is required by specified socket type" );
+	public void connect ( ConnectionEndPoint host ) throws IllegalArgumentException, SocketException {
+		if ( this.socketType == Socket.SOCK_STREAM && ! ( host instanceof TCPEndPoint ) ) {
+			throw new IllegalArgumentException( "Socket is of type SOCK_STREAM but ConnectionEndPoint does not not describe a TCP enabled connection" );
 		}
-
-		if ( addr.portSet() ) {
-			this.connect( addr.getAddress(), addr.getPort(), this.socketType, this.addressFamily );
+		else if ( this.socketType == Socket.SOCK_DGRAM && ! ( host instanceof UDPEndPoint ) ) {
+			throw new IllegalArgumentException( "Socket is of type SOCK_DGRAM but ConnectionEndPoint does not not describe a UDP enabled connection" );
 		}
 		else {
-			this.connect( addr.getAddress(), -1, this.socketType, this.addressFamily );
+			this.attachedHost = host;
+			this.connect( ( (NetworkPort)host ).getPort() );
 		}
 	}
 
 	/**
 	 * Performs the actual connection operation at the native level
 	 */
-	protected native void connect ( byte[] ip, int port, int socktype, int af );
+	protected native void connect ( int port );
 
 	/**
 	 * Bind the socket to the specified host and port
@@ -171,25 +173,23 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void bind ( NetworkAddress addr ) throws AddressFormatException,
-			SocketException {
-		if ( ( this.socketType == Socket.SOCK_STREAM || this.socketType == Socket.SOCK_DGRAM )
-				&& !addr.portSet() ) {
-			throw new AddressFormatException( "Host not set in NetworkAddress object but is required by specified socket type" );
+	public void bind ( ConnectionEndPoint host ) throws IllegalArgumentException, SocketException {
+		if ( this.socketType == Socket.SOCK_STREAM && ! ( host instanceof TCPEndPoint ) ) {
+			throw new IllegalArgumentException( "Socket is of type SOCK_STREAM but ConnectionEndPoint does not not describe a TCP enabled connection" );
 		}
-
-		if ( addr.portSet() ) {
-			this.bind( addr.getAddress(), addr.getPort(), this.socketType, this.addressFamily );
+		else if ( this.socketType == Socket.SOCK_DGRAM && ! ( host instanceof UDPEndPoint ) ) {
+			throw new IllegalArgumentException( "Socket is of type SOCK_DGRAM but ConnectionEndPoint does not not describe a UDP enabled connection" );
 		}
 		else {
-			this.bind( addr.getAddress(), -1, this.socketType, this.addressFamily );
+			this.attachedHost = host;
+			this.bind( ( (NetworkPort)host ).getPort() );
 		}
 	}
 
 	/**
 	 * Perform the actual bind operation at the native level
 	 */
-	protected native void bind ( byte[] ip, int port, int socktype, int af );
+	protected native void bind ( int port );
 
 	/**
 	 * Set the socket as actively listening for incoming connections
@@ -243,9 +243,9 @@ public class Socket {
 	 *             corresponds with a remote address. i.e. this socket is
 	 *             locally bound and is listening for incoming connections
 	 */
-	public NetworkAddress getRemoteAddress ( ) throws InvalidStateException {
-		if ( this.remoteAddress != null ) {
-			return this.remoteAddress;
+	public ConnectionEndPoint getAttachedHost ( ) throws InvalidStateException {
+		if ( this.attachedHost != null ) {
+			return this.attachedHost;
 		}
 		else {
 			throw new InvalidStateException( "This socket does not have a logical remote address" );

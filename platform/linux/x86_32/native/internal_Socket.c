@@ -122,56 +122,75 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( close ) ( JNIEnv *env, jobject obj )
  * Method:    connect
  * Signature: ([BIII)V
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj, jbyteArray ip, 
-								jint port, jint socktype, jint addressfamily ) {
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj, jint port ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
-
+	jclass NetworkAddress_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/NetworkAddress;" );
+	jclass ConnectionEndPoint_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/ConnectionEndPoint;" );
+	
 	/* Grab the socket file descriptor value */
 	jfieldID cSocket_f = (*env)->GetFieldID( env, Socket_c, "cSocket", "I" );
 	jint cSocket = (*env)->GetIntField( env, obj, cSocket_f );
 	
-	/* Get the IP addr into a standard array (unsigned byte) */
+	/* And the address family */
+	jfieldID addressFamily_f = (*env)->GetFieldID( env, Socket_c, "addressFamily", "I" );
+	jint addressFamily = (*env)->GetIntField( env, obj, addressFamily_f );
+	
+	/* And the socket type */
+	jfieldID socketType_f = (*env)->GetFieldID( env, Socket_c, "socketType", "I" );
+	jint socketType = (*env)->GetIntField( env, obj, socketType_f );
+	
+	/* And the connection end point */
+	jfieldID attachedHost_f = (*env)->GetFieldID( env, Socket_c, "attachedHost", "Lorg/xomios/connectivity/net/ConnectionEndPoint;" );
+	jobject attachedHost = (*env)->GetObjectField( env, obj, attachedHost_f );
+	
+	/* And lets grab the NetworkAddress */
+	jmethodID getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
+	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, getNetworkAddress_m );	
+			
+	/* Get the IP address into a standard array (unsigned byte) */
+	jmethodID getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
+	jbyteArray ip = (*env)->CallObjectMethod( env, networkAddress, getAddress_m );
+	
+	/* Get the IP version */
+	jmethodID getIPVersion_m = (*env)->GetMethodID( env, NetworkAddress_c, "getIPVersion", "()I" );
+	jint ipVersion = (*env)->CallIntMethod( env, networkAddress, getIPVersion_m );
+	
+	/* The native byte array IP */
 	ubyte *ip_native;
+
+	/* Return value for connect() call */
+	int err;
 	
-	int ipLength = (*env)->GetArrayLength( env, ip );
-	
-	if ( ipLength == 4 ) {
+	if ( ipVersion == 4 ) {
 		/* IP version 4 */
+		int native_socketType = getNativeAddressFamily( socketType );
 		
-		/* Java bytes are all signed so we must cast */
-		ip_native = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
-		
-		/* The socket address struct for the connection */
-		struct sockaddr_in endpoint;
-		
-		/* Return value for connect() call */
-		int err = 0;
-		
-		/* Network order address */
-		in_addr_t addr = (ip_native[0] << 24) |
-						 (ip_native[1] << 16) |
-						 (ip_native[2] <<  8) |
-						 (ip_native[3]);
-		
-		/* Convert the host address to network order and store */		
-		endpoint.sin_addr.s_addr = htonl(addr);
-		endpoint.sin_family = getNativeAddressFamily( addressfamily );
-		
-		if ( port > 0 ) {
-			/* 
-			 * Set the port if it is greater than 0. -1 represents a connection 
-			 * not utilizing ports 
-			 */
+		if ( native_socketType == SOCK_STREAM || native_socketType == SOCK_DGRAM ) {		
+			/* Java bytes are all signed so we must cast */
+			ip_native = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
+									
+			/* The socket address struct for the connection */
+			struct sockaddr_in endpoint;
+			
+			/* Network order address */
+			in_addr_t addr = (ip_native[0] << 24) |
+							 (ip_native[1] << 16) |
+							 (ip_native[2] <<  8) |
+							 (ip_native[3]);
+			
+			/* Convert the host address to network order and store */		
+			endpoint.sin_addr.s_addr = htonl(addr);
+			endpoint.sin_family = getNativeAddressFamily( addressFamily );
 			endpoint.sin_port = htons((short)port);
-		}
-		
-		err = connect( cSocket, (struct sockaddr *) &endpoint, sizeof(endpoint) );
-		if ( err < 0 ) {
-			(*env)->ThrowNew( env, SocketException_c, "Error connecting to remote host" );
+			
+			err = connect( cSocket, (struct sockaddr *) &endpoint, sizeof(endpoint) );
+			if ( err < 0 ) {
+				(*env)->ThrowNew( env, SocketException_c, "Error connecting to remote host" );
+			}
 		}
 	}
-	else if ( ipLength == 16 ) {
+	else if ( ipVersion == 6 ) {
 		/* IP version 6 */
 		(*env)->ThrowNew( env, SocketException_c, "IPv6 Support not yet implemented" );
 	}
@@ -185,56 +204,75 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj
  * Method:    bind
  * Signature: ([BIII)V
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, jbyteArray ip, jint port, jint socktype, jint addressfamily ) {
+JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, jint port ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
-
+	jclass NetworkAddress_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/NetworkAddress;" );
+	jclass ConnectionEndPoint_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/ConnectionEndPoint;" );
+	
 	/* Grab the socket file descriptor value */
 	jfieldID cSocket_f = (*env)->GetFieldID( env, Socket_c, "cSocket", "I" );
 	jint cSocket = (*env)->GetIntField( env, obj, cSocket_f );
 	
-	/* Get the IP addr into a standard array (unsigned byte) */
+	/* And the address family */
+	jfieldID addressFamily_f = (*env)->GetFieldID( env, Socket_c, "addressFamily", "I" );
+	jint addressFamily = (*env)->GetIntField( env, obj, addressFamily_f );
+	
+	/* And the socket type */
+	jfieldID socketType_f = (*env)->GetFieldID( env, Socket_c, "socketType", "I" );
+	jint socketType = (*env)->GetIntField( env, obj, socketType_f );
+	
+	/* And the connection end point */
+	jfieldID attachedHost_f = (*env)->GetFieldID( env, Socket_c, "attachedHost", "Lorg/xomios/connectivity/net/ConnectionEndPoint;" );
+	jobject attachedHost = (*env)->GetObjectField( env, obj, attachedHost_f );
+	
+	/* And lets grab the NetworkAddress */
+	jmethodID getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
+	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, getNetworkAddress_m );	
+			
+	/* Get the IP address */
+	jmethodID getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
+	jbyteArray ip = (*env)->CallObjectMethod( env, networkAddress, getAddress_m );
+	
+	/* Get the IP version */
+	jmethodID getIPVersion_m = (*env)->GetMethodID( env, NetworkAddress_c, "getIPVersion", "()I" );
+	jint ipVersion = (*env)->CallIntMethod( env, networkAddress, getIPVersion_m );
+	
+	/* The native byte array IP */
 	ubyte *ip_native;
+
+	/* Return value for connect() call */
+	int err;
 	
-	int ipLength = (*env)->GetArrayLength( env, ip );
-	
-	if ( ipLength == 4 ) {
+	if ( ipVersion == 4 ) {
 		/* IP version 4 */
+		int native_socketType = getNativeAddressFamily( socketType );
 		
-		/* Java bytes are all signed so we must cast */
-		ip_native = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
-		
-		/* The socket address struct for the connection */
-		struct sockaddr_in endpoint;
-		
-		/* Return value for connect() call */
-		int err = 0;
-		
-		/* Network order address */
-		in_addr_t addr = (ip_native[0] << 24) |
-						 (ip_native[1] << 16) |
-						 (ip_native[2] <<  8) |
-						 (ip_native[3]);
-		
-		/* Convert the host address to network order and store */		
-		endpoint.sin_addr.s_addr = htonl(addr);
-		endpoint.sin_family = getNativeAddressFamily( addressfamily );
-		
-		if ( port > 0 ) {
-			/* 
-			 * Set the port if it is greater than 0. -1 represents a connection 
-			 * not utilizing ports 
-			 */
+		if ( native_socketType == SOCK_STREAM || native_socketType == SOCK_DGRAM ) {		
+			/* Java bytes are all signed so we must cast */
+			ip_native = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
+			
+			/* The socket address struct for the connection */
+			struct sockaddr_in endpoint;
+			
+			/* Network order address */
+			in_addr_t addr = (ip_native[0] << 24) |
+							 (ip_native[1] << 16) |
+							 (ip_native[2] <<  8) |
+							 (ip_native[3]);
+			
+			/* Convert the host address to network order and store */		
+			endpoint.sin_addr.s_addr = htonl(addr);
+			endpoint.sin_family = getNativeAddressFamily( addressFamily );
 			endpoint.sin_port = htons((short)port);
-		}
-		
-		err = bind( cSocket, (struct sockaddr *) &endpoint, sizeof(endpoint) );
-		if ( err < 0 ) {
-			printf ( "%d\n", errno );
-			(*env)->ThrowNew( env, SocketException_c, "Error binding to address/port" );
+			
+			err = bind( cSocket, (struct sockaddr *) &endpoint, sizeof(endpoint) );
+			if ( err < 0 ) {
+				(*env)->ThrowNew( env, SocketException_c, "Error binding to host" );
+			}
 		}
 	}
-	else if ( ipLength == 16 ) {
+	else if ( ipVersion == 6 ) {
 		/* IP version 6 */
 		(*env)->ThrowNew( env, SocketException_c, "IPv6 Support not yet implemented" );
 	}
@@ -281,7 +319,11 @@ JNIEXPORT jobject JNICALL XOM_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject ob
 	/* get the classes we need */
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
-	jclass IPv4Address_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/IPv4Address;" );
+	jclass ConnectionEndPoint_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/ConnectionEndPoint;" );
+	jclass NetworkAddress_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/NetworkAddress;" );
+		
+	/* Socket constructor */
+	jmethodID constSocket_m = (*env)->GetMethodID( env, Socket_c, "<init>", "(II)V" );
 	
 	/* Grab the socket file descriptor value */
 	jfieldID cSocket_f = (*env)->GetFieldID( env, Socket_c, "cSocket", "I" );
@@ -295,43 +337,102 @@ JNIEXPORT jobject JNICALL XOM_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject ob
 	jfieldID socketType_f = (*env)->GetFieldID( env, Socket_c, "socketType", "I" );
 	jint socketType = (*env)->GetIntField( env, obj, socketType_f );
 	
-	/* NetworkAddress field of a Socket */
-	jfieldID remoteAddress_f = (*env)->GetFieldID( env, Socket_c, "remoteAddress", "Lorg/xomios/connectivity/net/NetworkAddress;" );
 	
-	jmethodID constSocket_m = (*env)->GetMethodID( env, Socket_c, "<init>", "(II)V" );
-	jmethodID constIPv4Address_m = (*env)->GetMethodID( env, IPv4Address_c, "<init>", "([B)V" );
+	/**
+	 * The next three blocks are just to determine the version of IP in effect. 
+	 * Isn't JNI fun?!?  
+	 */
 	
-	struct sockaddr_in remoteAddress;
-	socklen_t remoteAddress_size;
+	/* And the connection end point */
+	jfieldID attachedHost_f = (*env)->GetFieldID( env, Socket_c, "attachedHost", "Lorg/xomios/connectivity/net/ConnectionEndPoint;" );
+	jobject attachedHost = (*env)->GetObjectField( env, obj, attachedHost_f );
 	
-	int newSocket, err;
+	/* And lets grab the NetworkAddress */
+	jmethodID getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
+	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, getNetworkAddress_m );	
 	
-	/* Perform the accept() call */
-	err = newSocket = accept( cSocket, (struct sockaddr*) &remoteAddress, &remoteAddress_size );
+	/* Get the IP version */
+	jmethodID getIPVersion_m = (*env)->GetMethodID( env, NetworkAddress_c, "getIPVersion", "()I" );
+	jint ipVersion = (*env)->CallIntMethod( env, networkAddress, getIPVersion_m );
 	
-	if ( err < 0 ) {
-		(*env)->ThrowNew( env, SocketException_c, "Error accepting connection" );
+	
+	/* The Socket object returned by this call */
+	jobject clientSocket;
+	
+	if ( ipVersion == 4 ) {
+		
+		/* Lets get us a class */
+		jclass IPv4Address_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/IPv4Address;" );
+		jmethodID constIPv4Address_m = (*env)->GetMethodID( env, IPv4Address_c, "<init>", "([B)V" );
+		
+		/* 
+		 * The transport class (probably TCP or UDP) and the method ID for the 
+		 * constructor of this class 
+		 */
+		jclass transport_c;
+		jmethodID constTransport_m;
+		
+		struct sockaddr_in remoteAddress;
+		socklen_t remoteAddress_size = sizeof(remoteAddress);
+		
+		int newSocket, err;
+		
+		/* Perform the accept() call */
+		err = newSocket = accept( cSocket, (struct sockaddr*) &remoteAddress, &remoteAddress_size );
+		
+		if ( err < 0 ) {
+			(*env)->ThrowNew( env, SocketException_c, "Error accepting connection" );
+		}
+		
+		/* Remote IP */
+		sbyte ip[4];
+		int ip_native = remoteAddress.sin_addr.s_addr;
+		
+		/* 
+		 * The java internal representation of the IP as an array of bytes 
+		 * (byte[]) 
+		 */
+		jbyteArray ip_internal = (*env)->NewByteArray( env, 4 );
+
+		/* Break up the integer into an array of bytes representing the IP */
+		ip[0] = (ntohl( ip_native ) & (0xFF << 24)) >> 24;
+		ip[1] = (ntohl( ip_native ) & (0xFF << 16)) >> 16;
+		ip[2] = (ntohl( ip_native ) & (0xFF <<  8)) >>  8;
+		ip[3] = (ntohl( ip_native ) & (0xFF <<  0)) >>  0;
+		
+		/* Copy the contents to the java array */
+		(*env)->SetByteArrayRegion( env, ip_internal, 0, 4, ip );
+		
+		/* Remote port */
+		int remote_port = remoteAddress.sin_port;
+		
+		/* 
+		 * Instantiate transport_c and contTransport_m as defined by the socket
+		 * type
+		 */
+		if ( getNativeSocketType(socketType) == SOCK_STREAM ) {
+			transport_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/TCPEndPoint;" );
+			constTransport_m = (*env)->GetMethodID( env, transport_c, "<init>", "(Lorg/xomios/connectivity/net/NetworkAddress;I)V" );
+		}
+		else if (  getNativeSocketType(socketType) == SOCK_DGRAM ) {
+			(*env)->ThrowNew( env, SocketException_c, "Transport method not implemented for accept();" );
+		}
+		else {
+			(*env)->ThrowNew( env, SocketException_c, "Transport can not use accept()" );
+		}
+		
+		/* Create a new socket object with the properties of the remote host */
+		clientSocket = (*env)->NewObject( env, Socket_c, constSocket_m, addressFamily, socketType );
+		jobject newNetworkAddress = (*env)->NewObject( env, IPv4Address_c, constIPv4Address_m, ip_internal );
+		
+		/* Create the connection endpoint object */
+		jobject newTransportEndPoint = (*env)->NewObject( env, transport_c, constTransport_m, newNetworkAddress, remote_port );
+		
+		/* Move over the fields */
+		(*env)->SetObjectField( env, clientSocket, attachedHost_f, newTransportEndPoint );
+		(*env)->SetIntField( env, clientSocket, cSocket_f, newSocket );	
 	}
 	
-	/* Remote IP */
-	sbyte ip[4];
-	int ip_h = remoteAddress.sin_addr.s_addr;
-	jbyteArray ip_internal = (*env)->NewByteArray( env, 4 );
-	
-	ip[0] = (ntohl( ip_h ) & (0xFF << 24)) >> 24;
-	ip[1] = (ntohl( ip_h ) & (0xFF << 16)) >> 16;
-	ip[2] = (ntohl( ip_h ) & (0xFF <<  8)) >>  8;
-	ip[3] = (ntohl( ip_h ) & (0xFF <<  0)) >>  0;
-	
-	(*env)->SetByteArrayRegion( env, ip_internal, 0, 4, ip );
-	
-	/* Create a new socket object with the properties of the remote host */
-	jobject clientSocket = (*env)->NewObject( env, Socket_c, constSocket_m, addressFamily, socketType );
-	jobject newIPv4Address = (*env)->NewObject( env, IPv4Address_c, constIPv4Address_m, ip_internal );
-	
-	(*env)->SetObjectField( env, clientSocket, remoteAddress_f, newIPv4Address );
-	(*env)->SetIntField( env, clientSocket, cSocket_f, newSocket );	
-
 	return clientSocket;
 }
 
@@ -352,6 +453,9 @@ JNIEXPORT jstring JNICALL XOM_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj
 	char *msgbuf = malloc( (count) * sizeof(char) );
 	int msglen;
 	
+	/* Zero our memory, eh? Good idea! */
+	memset( msgbuf, '\0', count );
+	
 	err = msglen = recv( cSocket, msgbuf, (count-1) * sizeof(char), 0 );
 
 	if ( err < 0 ) {
@@ -359,7 +463,9 @@ JNIEXPORT jstring JNICALL XOM_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj
 	}
 
 	jstring msg = (*env)->NewStringUTF( env, msgbuf );
-			
+	
+	free( msgbuf );
+	
 	return msg;
 }
 

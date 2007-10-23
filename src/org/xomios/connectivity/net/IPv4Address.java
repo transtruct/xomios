@@ -24,82 +24,54 @@ public class IPv4Address extends NetworkAddress {
 	 * Fair enough but I couldn't come up with a better way to have socket
 	 * handle it. Let me know if you think of anything because I really don't
 	 * like this either.
+	 * 
+	 * Fixed. Moved to ConnectionEndPoint.
 	 */
-	protected static final int MAX_PORT = 65535;
-	protected int port = -1;
 
 	/**
 	 * Create a new address object bound to the specified address
 	 * 
 	 * @param addr The IP to associate this object with the host
-	 * @throws AddressFormatException addr is not a properly formatted IPv4
+	 * @throws AddressFormatException address is not a properly formatted IPv4
 	 *             address
 	 */
-	public IPv4Address ( String addr ) throws AddressFormatException {
-		this.setAddress( addr );
+	public IPv4Address ( String address ) throws AddressFormatException {
+		this.setAddress( address );
 	}
 
 	/**
 	 * Create a new address object bound to the specified address
 	 * 
 	 * @param addr The IP to associate this object with the host
-	 * @throws AddressFormatException addr does not represent a valid IPv4
+	 * @throws AddressFormatException address does not represent a valid IPv4
 	 *             address
 	 */
-	public IPv4Address ( byte[] addr ) throws AddressFormatException {
-		this.setAddress( addr );
-	}
-
-	/**
-	 * Create a new address object bound to the specified address
-	 * 
-	 * @param addr The IP to associate this object with the host
-	 * @param port Port number to associate this object with
-	 * @throws AddressFormatException addr does not represent a valid IPv4
-	 *             address
-	 * @throws IllegalArgumentException port is not inside the valid port range
-	 */
-	public IPv4Address ( String addr, int port ) throws AddressFormatException, IllegalArgumentException {
-		this.setAddress( addr );
-		this.setPort( port );
-	}
-
-	/**
-	 * Create a new address object bound to the specified address
-	 * 
-	 * @param addr The IP to associate this object with the host
-	 * @param port Port number to associate this object with
-	 * @throws AddressFormatException addr does not represent a valid IPv4
-	 *             address
-	 * @throws IllegalArgumentException port is not inside the valid port range
-	 */
-	public IPv4Address ( byte[] addr, int port ) throws AddressFormatException, IllegalArgumentException {
-		this.setAddress( addr );
-		this.setPort( port );
+	public IPv4Address ( byte[] address ) throws AddressFormatException {
+		this.setAddress( address );
 	}
 
 	/**
 	 * @see org.xomios.connectivity.net.NetworkAddress#setAddress(java.lang.String)
 	 */
 	@Override
-	public void setAddress ( String addr ) throws AddressFormatException {
-		String[] octets = addr.split( "\\." );
-		byte[] address = new byte[4];
+	public void setAddress ( String address ) throws AddressFormatException {
+		String[] octets = address.split( "\\." );
+		byte[] addr = new byte[4];
 
 		if ( octets.length != 4 ) {
-			throw new AddressFormatException( addr + " is not a valid address" );
+			throw new AddressFormatException( address + " is not a valid address" );
 		}
 
 		for ( int i = 0; i < 4; i++ ) {
 			try {
-				address[i] = (byte) ( Integer.valueOf( octets[i] ) & ( (byte)0xff ) );
+				addr[i] = (byte) ( Integer.valueOf( octets[i] ) & ( (byte)0xff ) );
 			}
 			catch ( NumberFormatException e ) {
-				throw new AddressFormatException( addr + " is not a valid address" );
+				throw new AddressFormatException( address + " is not a valid address" );
 			}
 		}
 
-		this.address = address;
+		this.address = addr;
 	}
 
 	/**
@@ -112,6 +84,14 @@ public class IPv4Address extends NetworkAddress {
 		}
 
 		this.address = addr;
+	}
+
+	/**
+	 * @see org.xomios.connectivity.net.NetworkAddress#getIPVersion()
+	 */
+	@Override
+	public int getIPVersion ( ) {
+		return 4;
 	}
 
 	/**
@@ -129,42 +109,6 @@ public class IPv4Address extends NetworkAddress {
 		}
 
 		return buf.toString();
-	}
-
-	/**
-	 * @see org.xomios.connectivity.net.NetworkPort#getPort()
-	 */
-	public int getPort ( ) {
-		return this.port;
-	}
-
-	/**
-	 * @see org.xomios.connectivity.net.NetworkPort#setPort(int)
-	 */
-	public void setPort ( int p ) throws IllegalArgumentException {
-		if ( p < 0 || p > this.getMaxPortNumber() ) {
-			throw new IllegalArgumentException( "Invalid port number specified" );
-		}
-
-		this.port = p;
-	}
-
-	/**
-	 * @see org.xomios.connectivity.net.NetworkPort#getMaxPortNumber()
-	 */
-	public int getMaxPortNumber ( ) {
-		return IPv4Address.MAX_PORT;
-	}
-
-	/**
-	 * @see org.xomios.connectivity.net.NetworkPort#portSet()
-	 */
-	public boolean portSet ( ) {
-		if ( this.port == -1 ) {
-			return false;
-		}
-
-		return true;
 	}
 
 }

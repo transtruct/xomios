@@ -8,7 +8,6 @@
 
 package org.xomios.connectivity;
 
-import org.xomios.IOException;
 
 /**
  * Thrown when an attempt to modify an input/output resource is attempted while
@@ -17,7 +16,7 @@ import org.xomios.IOException;
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
-public class InvalidStateException extends IOException {
+public class InvalidStateException extends RuntimeException {
 
 	private static final long serialVersionUID = -1284734416019721578L;
 

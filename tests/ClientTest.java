@@ -8,6 +8,8 @@
 
 import org.xomios.internal.*;
 import org.xomios.connectivity.net.*;
+import org.xomios.connectivity.*;
+import org.xomios.*;
 
 /**
  * Test socket client
@@ -20,7 +22,7 @@ public class ClientTest {
 	/**
 	 * @param args None
 	 */
-	public static void main ( String[] args ) throws SocketException {
+	public static void main ( String[] args ) throws SocketException, IOException {
 
 		System.out.print( "Creating socket..." );
 		  Socket s = new Socket();
@@ -28,15 +30,20 @@ public class ClientTest {
 		System.out.println( "done." );
 		
 		System.out.print( "Creating address object..." );
-		  IPv4Address addr = new IPv4Address( "127.0.0.1", Integer.valueOf( args[0] ) );
+		  IPv4Address addr = new IPv4Address( "127.0.0.1" );
+		  TCPEndPoint rhost = new TCPEndPoint( addr, Integer.valueOf( args[0] ) );
 		System.out.println( "done." );
 		
 		System.out.print( "Binding connection..." );
-		  s.connect( addr );
+		  s.connect( rhost );
 		System.out.println( "done." );
 		
 		System.out.print( "Sending message..." );
 		  s.send( "Hello world!" );
+		System.out.println( "done." );
+		
+		System.out.println( "Waiting for reply..." );
+		  System.out.println( "\t" + s.recv( 100 ) );
 		System.out.println( "done." );
 		  
 		System.out.print( "Closing connection..." );
