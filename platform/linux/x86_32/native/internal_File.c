@@ -150,7 +150,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject 
 		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
 		(*env)->ThrowNew( env, c_AccessException, "could not seek in file" );
 		
-		return (jlong) NULL;
+		return (jlong) 0;
 	}
 	
 	return (jlong) new_offset;
@@ -175,7 +175,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, jobject 
 		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
 		(*env)->ThrowNew( env, c_AccessException, "could not seek in file" );
 		
-		return (jlong) NULL;
+		return (jlong) 0;
 	}
 	
 	return (jlong) offset;
