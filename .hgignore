@@ -6,6 +6,7 @@ syntax: glob
 *.dll
 *.exe
 *.jar
+*.orig
 .classpath
 .project
 .cproject
