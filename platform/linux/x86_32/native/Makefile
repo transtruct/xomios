@@ -6,14 +6,19 @@
 
 # Makefile for Linux x86 32-bit architecture
 
-OBJECTS = internal_Socket.o internal_File.o
-SOURCES = internal_Socket.c internal_File.c
+OBJECTS = internal_Socket.o internal_File.o xomios_error.o
+SOURCES = internal_Socket.c internal_File.c xomios_error.c
 
-CFLAGS += -Wall -fPIC -I/usr/lib/jvm/java-6-sun/include/ -I/usr/lib/jvm/java-6-sun/include/linux/
-LIBS = -Wall -shared -fPIC
+CFLAGS += -pedantic -std=c99 -Wall -fPIC -I/usr/lib/jvm/java-6-sun/include/ -I/usr/lib/jvm/java-6-sun/include/linux/
+LIBS = -pedantic -std=c99 -Wall -shared -fPIC
+
+.PHONY: all clean
 
 all: $(OBJECTS)
 	$(CC) $(LIBS) -o libxomios.so $(OBJECTS)
+
+xomios_error.o: xomios_error.c
+	$(CC) $(CFLAGS) -o xomios_error.o -c xomios_error.c
 
 internal_Socket.o: internal_Socket.c
 	$(CC) $(CFLAGS) -o internal_Socket.o -c internal_Socket.c
@@ -27,6 +32,5 @@ javah:
 
 $(SOURCES):
 
-.PHONY: clean
 clean:
 	-rm $(OBJECTS)

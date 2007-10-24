@@ -9,7 +9,6 @@
 package org.xomios.internal;
 
 import org.xomios.IOException;
-import org.xomios.connectivity.InvalidStateException;
 
 /**
  * Native POSIX file implementation.
@@ -193,7 +192,7 @@ public class File {
 	 */
 	public void open ( int options ) throws IOException {
 		if ( this.isOpen() ) {
-			throw new InvalidStateException( "opened" );
+			throw new IllegalStateException( "opened" );
 		}
 		this._open( options );
 	}
@@ -210,7 +209,7 @@ public class File {
 	 */
 	public String read ( int length ) throws IOException {
 		if ( !this.isOpen() ) {
-			throw new InvalidStateException( "closed" );
+			throw new IllegalStateException( "closed" );
 		}
 		return this._read( length );
 	}
@@ -243,7 +242,7 @@ public class File {
 	 */
 	public void write ( String data ) throws IOException {
 		if ( !this.isOpen() ) {
-			throw new InvalidStateException( "closed" );
+			throw new IllegalStateException( "closed" );
 		}
 		this._write( data );
 	}
@@ -275,7 +274,7 @@ public class File {
 	/* TODO Consider implementing this using an Offset type. */
 	public long setOffset ( long offset, Seek whence ) throws IOException {
 		if ( !this.isOpen() ) {
-			throw new InvalidStateException( "closed" );
+			throw new IllegalStateException( "closed" );
 		}
 		return this._setOffset( offset, whence );
 	}
@@ -292,7 +291,7 @@ public class File {
 	/* TODO Consider implementing this using an Offset type. */
 	public long getOffset ( ) throws IOException {
 		if ( !this.isOpen() ) {
-			throw new InvalidStateException( "closed" );
+			throw new IllegalStateException( "closed" );
 		}
 		return this._getOffset();
 	}
@@ -306,7 +305,7 @@ public class File {
 	 */
 	public void close ( ) throws IOException {
 		if ( !this.isOpen() ) {
-			throw new InvalidStateException( "closed" );
+			throw new IllegalStateException( "closed" );
 		}
 		this._close();
 	}

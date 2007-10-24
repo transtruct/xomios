@@ -10,8 +10,8 @@
 #define _XOMIOS_H
 
 #include "xomios_platform.h"
-
 #include <jni.h>
+#include "xomios_error.h"
 
 #define XOM( x ) Java_org_xomios_##x
 

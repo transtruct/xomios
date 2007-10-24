@@ -8,6 +8,8 @@
 
 #include "internal_File.h"
 
+#include <errno.h>
+
 static jfieldID f_File_fileDescriptor;
 
 #define INTERNAL_FILE_FD_SET( env, object, value ) (*(env))->SetIntField( (env), (object), f_File_fileDescriptor, (jint) (value) )
@@ -62,12 +64,11 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 	const jbyte *path = (const jbyte *) (*env)->GetStringUTFChars( env, s_path, NULL );
 	
 	/* Open the file. */
-	int fd = open( (char *) path, oflag );
-	if (fd == -1) {
-		/* Some error occurred, will check errno()/strerror_r() for details later. */
-		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
+	int fd;
+	if ((fd = open( (char *) path, oflag )) < 0) {
+		/* Clean up path. */
 		(*env)->ReleaseStringUTFChars( env, s_path, (const char *) path );
-		(*env)->ThrowNew( env, c_AccessException, "file could not be opened" );
+		xomios_error_throw( env, errno );
 		
 		return;
 	}
@@ -92,8 +93,7 @@ JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject thi
 	memset( buffer, '\0', length + 1 );
 	
 	if (read( fd, buffer, length ) == -1) {
-		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
-		(*env)->ThrowNew( env, c_AccessException, "file could not be read" );
+		xomios_error_throw( env, errno );
 		
 		return (jstring) NULL;
 	}
@@ -111,9 +111,8 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this,
 	int fd = INTERNAL_FILE_FD_GET( env, this );
 	
 	if (write( fd, (void *) buffer, (*env)->GetStringUTFLength( env, data ) ) == -1) {
-		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
 		(*env)->ReleaseStringUTFChars( env, data, (const char *) buffer );
-		(*env)->ThrowNew( env, c_AccessException, "file could not be written" );
+		xomios_error_throw( env, errno );
 		
 		return;
 	}
@@ -150,8 +149,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject 
 	int fd = INTERNAL_FILE_FD_GET( env, this );
 	
 	if ((new_offset = lseek(fd, (off_t) offset, whence)) == (off_t) -1) {
-		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
-		(*env)->ThrowNew( env, c_AccessException, "could not seek in file" );
+		xomios_error_throw( env, errno );
 		
 		return (jlong) 0;
 	}
@@ -171,8 +169,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, jobject 
 	off_t offset;
 	
 	if ((offset = lseek(fd, (off_t) 0, SEEK_CUR)) == (off_t) -1) {
-		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
-		(*env)->ThrowNew( env, c_AccessException, "could not seek in file" );
+		xomios_error_throw( env, errno );
 		
 		return (jlong) 0;
 	}
@@ -188,8 +185,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this 
 	
 	/* Close the file. */
 	if (close( fd ) == -1) {
-		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
-		(*env)->ThrowNew( env, c_AccessException, "file could not be closed" );
+		xomios_error_throw( env, errno );
 		
 		return;
 	}

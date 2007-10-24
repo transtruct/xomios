@@ -11,18 +11,17 @@ package org.xomios.connectivity;
 import org.xomios.IOException;
 
 /**
- * Exception thrown when an attempt to manipulate an input/output mechanism is
- * restricted due to insufficient permissions, unavailability, or other
- * circumstances related to obtaining sufficient access to the mechanism.
+ * Thrown when an error occurs related to the connection of an input/output
+ * system.
  * 
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
-public class AccessException extends IOException {
+public class ConnectivityException extends IOException {
 
-	private static final long serialVersionUID = 7924995288684860418L;
+	private static final long serialVersionUID = 1848558316149299861L;
 
-	public AccessException ( String message ) {
+	public ConnectivityException ( String message ) {
 		super( message );
 	}
 

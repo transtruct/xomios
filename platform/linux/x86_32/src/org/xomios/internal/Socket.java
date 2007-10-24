@@ -8,7 +8,6 @@
 
 package org.xomios.internal;
 
-import org.xomios.connectivity.InvalidStateException;
 import org.xomios.connectivity.net.AddressFormatException;
 import org.xomios.connectivity.net.ConnectionEndPoint;
 import org.xomios.connectivity.net.NetworkPort;
@@ -146,11 +145,14 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void connect ( ConnectionEndPoint host ) throws IllegalArgumentException, SocketException {
-		if ( this.socketType == Socket.SOCK_STREAM && ! ( host instanceof TCPEndPoint ) ) {
+	public void connect ( ConnectionEndPoint host )
+			throws IllegalArgumentException, SocketException {
+		if ( this.socketType == Socket.SOCK_STREAM
+				&& ! ( host instanceof TCPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_STREAM but ConnectionEndPoint does not not describe a TCP enabled connection" );
 		}
-		else if ( this.socketType == Socket.SOCK_DGRAM && ! ( host instanceof UDPEndPoint ) ) {
+		else if ( this.socketType == Socket.SOCK_DGRAM
+				&& ! ( host instanceof UDPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_DGRAM but ConnectionEndPoint does not not describe a UDP enabled connection" );
 		}
 		else {
@@ -173,11 +175,14 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void bind ( ConnectionEndPoint host ) throws IllegalArgumentException, SocketException {
-		if ( this.socketType == Socket.SOCK_STREAM && ! ( host instanceof TCPEndPoint ) ) {
+	public void bind ( ConnectionEndPoint host )
+			throws IllegalArgumentException, SocketException {
+		if ( this.socketType == Socket.SOCK_STREAM
+				&& ! ( host instanceof TCPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_STREAM but ConnectionEndPoint does not not describe a TCP enabled connection" );
 		}
-		else if ( this.socketType == Socket.SOCK_DGRAM && ! ( host instanceof UDPEndPoint ) ) {
+		else if ( this.socketType == Socket.SOCK_DGRAM
+				&& ! ( host instanceof UDPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_DGRAM but ConnectionEndPoint does not not describe a UDP enabled connection" );
 		}
 		else {
@@ -243,12 +248,12 @@ public class Socket {
 	 *             corresponds with a remote address. i.e. this socket is
 	 *             locally bound and is listening for incoming connections
 	 */
-	public ConnectionEndPoint getAttachedHost ( ) throws InvalidStateException {
+	public ConnectionEndPoint getAttachedHost ( ) throws IllegalStateException {
 		if ( this.attachedHost != null ) {
 			return this.attachedHost;
 		}
 		else {
-			throw new InvalidStateException( "This socket does not have a logical remote address" );
+			throw new IllegalStateException( "This socket does not have a logical remote address" );
 		}
 	}
 
