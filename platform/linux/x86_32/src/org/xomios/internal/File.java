@@ -21,6 +21,7 @@ public class File {
 
 	static {
 		System.loadLibrary( "xomios" );
+		_initialize();
 	}
 
 	/* These are stolen from the Open Group's descriptions. */
@@ -163,6 +164,8 @@ public class File {
 	public File ( String path ) {
 		this.path = path;
 	}
+
+	private static native void _initialize ( );
 
 	/**
 	 * Gets the current file path.

@@ -8,6 +8,19 @@
 
 #include "internal_File.h"
 
+static jfieldID f_File_fileDescriptor;
+
+#define INTERNAL_FILE_FD_SET( env, object, value ) (*(env))->SetIntField( (env), (object), f_File_fileDescriptor, (jint) (value) )
+#define INTERNAL_FILE_FD_GET( env, object ) ((int) (*(env))->GetIntField( (env), (object), f_File_fileDescriptor ))
+#define INTERNAL_FILE_FD_CLEAR( env, object ) INTERNAL_FILE_FD_SET( (env), (object), -1 )
+
+/**
+ * @see org.xomios.internal.File#_initialize()
+ */
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1initialize ) ( JNIEnv *env, jclass class ) {
+	f_File_fileDescriptor = (*env)->GetFieldID( env, class, "fileDescriptor", "I" );
+}
+
 /**
  * @see org.xomios.internal.File#_open()
  */
@@ -41,10 +54,8 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 	oflag |= ( options & INTERNAL_FILE_O_SYNC ) ? O_SYNC : 0;
 	oflag |= ( options & INTERNAL_FILE_O_TRUNC ) ? O_TRUNC : 0;
 	
-	/* Locate classes. */
-	jclass c_File = (*env)->GetObjectClass( env, this );
-	
 	/* Locate methods. */
+	jclass c_File = (*env)->GetObjectClass( env, this );
 	jmethodID m_File_getPath = (*env)->GetMethodID( env, c_File, "getPath", "()Ljava/lang/String;" );
 	
 	jstring s_path = (jstring) (*env)->CallObjectMethod( env, this, m_File_getPath );
@@ -63,9 +74,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 	
 	(*env)->ReleaseStringUTFChars( env, s_path, (const char *) path );
 	
-	/* Locate and assign the internal file descriptor. */
-	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
-	(*env)->SetIntField( env, this, f_File_fileDescriptor, (jint) fd );
+	INTERNAL_FILE_FD_SET( env, this, fd );
 	
 	return;
 }
@@ -75,11 +84,9 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
  */
 JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject this, jint length ) {
 	char buffer[length + 1];
-	jclass c_File = (*env)->GetObjectClass( env, this );
 	
 	/* Get the file descriptor. */
-	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
-	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	int fd = INTERNAL_FILE_FD_GET( env, this );
 	
 	/* Wipe the buffer. */
 	memset( buffer, '\0', length + 1 );
@@ -99,11 +106,9 @@ JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject thi
  */
 JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this, jstring data ) {
 	const jbyte *buffer = (const jbyte *) (*env)->GetStringUTFChars( env, data, NULL );
-	jclass c_File = (*env)->GetObjectClass( env, this );
 	
 	/* Get the file descriptor. */
-	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
-	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	int fd = INTERNAL_FILE_FD_GET( env, this );
 	
 	if (write( fd, (void *) buffer, (*env)->GetStringUTFLength( env, data ) ) == -1) {
 		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
@@ -122,7 +127,6 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this,
  * @see org.xomios.internal.File#_setOffset()
  */
 JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject this, jlong offset, jobject o_whence ) {
-	jclass c_File = (*env)->GetObjectClass( env, this );
 	jclass c_File_Seek = (*env)->GetObjectClass( env, o_whence );
 	
 	/* How are we going to seek? */
@@ -143,8 +147,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject 
 	}
 	
 	/* Get the file descriptor. */
-	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
-	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	int fd = INTERNAL_FILE_FD_GET( env, this );
 	
 	if ((new_offset = lseek(fd, (off_t) offset, whence)) == (off_t) -1) {
 		jclass c_AccessException = (*env)->FindClass( env, "Lorg/xomios/connectivity/AccessException;" );
@@ -163,11 +166,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject 
  * @see org.xomios.internal.File#_getOffset()
  */
 JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, jobject this ) {
-	jclass c_File = (*env)->GetObjectClass( env, this );
-	
-	/* Get the file descriptor. */
-	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
-	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	int fd = INTERNAL_FILE_FD_GET( env, this );
 	
 	off_t offset;
 	
@@ -185,11 +184,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, jobject 
  * @see org.xomios.internal.File#_close()
  */
 JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) {	
-	jclass c_File = (*env)->GetObjectClass( env, this );
-	
-	/* Get the file descriptor. */
-	jfieldID f_File_fileDescriptor = (*env)->GetFieldID( env, c_File, "fileDescriptor", "I" );
-	int fd = (int) (*env)->GetIntField( env, this, f_File_fileDescriptor );
+	int fd = INTERNAL_FILE_FD_GET( env, this );
 	
 	/* Close the file. */
 	if (close( fd ) == -1) {
@@ -199,7 +194,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this 
 		return;
 	}
 	
-	(*env)->SetIntField( env, this, f_File_fileDescriptor, (jint) -1 );
+	INTERNAL_FILE_FD_CLEAR( env, this );
 	
 	return;
 }

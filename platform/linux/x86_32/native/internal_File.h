@@ -41,6 +41,11 @@
 #define INTERNAL_FILE_O_TRUNC 4096
 
 /**
+ * @see org.xomios.internal.File#_initialize()
+ */
+JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1initialize ) ( JNIEnv *, jclass );
+
+/**
  * @see org.xomios.internal.File#_open()
  */
 JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *, jobject, jint );
