@@ -6,11 +6,11 @@
  * see the LICENSE file included in this distribution.
  */
 
-#ifndef _INTERNAL_H
-#define _INTERNAL_H
+#ifndef _NATIVE_INTERNAL_H
+#define _NATIVE_INTERNAL_H
 
 #include "xomios.h"
 
-#define XOM_INTERNAL( x ) XOM( internal_##x )
+#define XOM_NATIVE_INTERNAL( x ) XOM_NATIVE( internal_##x )
 
 #endif

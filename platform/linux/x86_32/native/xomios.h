@@ -11,8 +11,7 @@
 
 #include "xomios_platform.h"
 #include <jni.h>
-#include "xomios_error.h"
 
-#define XOM( x ) Java_org_xomios_##x
+#define XOM_NATIVE( x ) Java_org_xomios_##x
 
 #endif

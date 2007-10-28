@@ -6,37 +6,37 @@
  * see the LICENSE file included in this distribution.
  */
 
-#include "internal_File.h"
+#include "native_internal_File.h"
 
 #include <errno.h>
 
 static jfieldID f_File_fileDescriptor;
 
-#define INTERNAL_FILE_FD_SET( env, object, value ) (*(env))->SetIntField( (env), (object), f_File_fileDescriptor, (jint) (value) )
-#define INTERNAL_FILE_FD_GET( env, object ) ((int) (*(env))->GetIntField( (env), (object), f_File_fileDescriptor ))
-#define INTERNAL_FILE_FD_CLEAR( env, object ) INTERNAL_FILE_FD_SET( (env), (object), -1 )
+#define XOM_NATIVE_INTERNAL_FILE_FD_SET( env, object, value ) (*(env))->SetIntField( (env), (object), f_File_fileDescriptor, (jint) (value) )
+#define XOM_NATIVE_INTERNAL_FILE_FD_GET( env, object ) ((int) (*(env))->GetIntField( (env), (object), f_File_fileDescriptor ))
+#define XOM_NATIVE_INTERNAL_FILE_FD_CLEAR( env, object ) XOM_NATIVE_INTERNAL_FILE_FD_SET( (env), (object), -1 )
 
 /**
  * @see org.xomios.internal.File#_initialize()
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1initialize ) ( JNIEnv *env, jclass class ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1initialize ) ( JNIEnv *env, jclass class ) {
 	f_File_fileDescriptor = (*env)->GetFieldID( env, class, "fileDescriptor", "I" );
 }
 
 /**
  * @see org.xomios.internal.File#_open()
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, jint options ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, jint options ) {
 	/* Make sure the options are sane by POSIX. */
 	int oflag = 0;
 	
 	/* Old implementations of O_RDONLY, O_WRONLY, and O_RDWR let O_RDONLY == 0,
 	 * so these need to be checked independently.
 	 */
-	if ((options & INTERNAL_FILE_O_RDWR) == INTERNAL_FILE_O_RDWR) {
+	if ((options & XOM_NATIVE_INTERNAL_FILE_O_RDWR) == XOM_NATIVE_INTERNAL_FILE_O_RDWR) {
 		oflag |= O_RDWR;
 	}
-	else if ((options & INTERNAL_FILE_O_WRONLY) == INTERNAL_FILE_O_WRONLY) {
+	else if ((options & XOM_NATIVE_INTERNAL_FILE_O_WRONLY) == XOM_NATIVE_INTERNAL_FILE_O_WRONLY) {
 		oflag |= O_WRONLY;
 	}
 	else {
@@ -46,15 +46,15 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 	
 	/* Need to account for O_NONBLOCK and open()s on invalid streams... */
 	
-	oflag |= ( options & INTERNAL_FILE_O_APPEND ) ? O_APPEND : 0;
-	oflag |= ( options & INTERNAL_FILE_O_CREAT ) ? O_CREAT : 0;
-	oflag |= ( options & INTERNAL_FILE_O_DSYNC ) ? O_DSYNC : 0;
-	oflag |= ( options & INTERNAL_FILE_O_EXCL ) ? O_EXCL : 0;
-	oflag |= ( options & INTERNAL_FILE_O_NOCTTY ) ? O_NOCTTY : 0;
-	oflag |= ( options & INTERNAL_FILE_O_NONBLOCK ) ? O_NONBLOCK : 0;
-	oflag |= ( options & INTERNAL_FILE_O_RSYNC ) ? O_RSYNC : 0;
-	oflag |= ( options & INTERNAL_FILE_O_SYNC ) ? O_SYNC : 0;
-	oflag |= ( options & INTERNAL_FILE_O_TRUNC ) ? O_TRUNC : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_APPEND ) ? O_APPEND : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_CREAT ) ? O_CREAT : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_DSYNC ) ? O_DSYNC : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_EXCL ) ? O_EXCL : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_NOCTTY ) ? O_NOCTTY : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_NONBLOCK ) ? O_NONBLOCK : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_RSYNC ) ? O_RSYNC : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_SYNC ) ? O_SYNC : 0;
+	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_TRUNC ) ? O_TRUNC : 0;
 	
 	/* Locate methods. */
 	jclass c_File = (*env)->GetObjectClass( env, this );
@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 	
 	(*env)->ReleaseStringUTFChars( env, s_path, (const char *) path );
 	
-	INTERNAL_FILE_FD_SET( env, this, fd );
+	XOM_NATIVE_INTERNAL_FILE_FD_SET( env, this, fd );
 	
 	return;
 }
@@ -83,11 +83,11 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject this, 
 /**
  * @see org.xomios.internal.File#_read()
  */
-JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject this, jint length ) {
+JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject this, jint length ) {
 	char buffer[length + 1];
 	
 	/* Get the file descriptor. */
-	int fd = INTERNAL_FILE_FD_GET( env, this );
+	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
 	/* Wipe the buffer. */
 	memset( buffer, '\0', length + 1 );
@@ -104,11 +104,11 @@ JNIEXPORT jstring JNICALL XOM_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobject thi
 /**
  * @see org.xomios.internal.File#_write()
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this, jstring data ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this, jstring data ) {
 	const jbyte *buffer = (const jbyte *) (*env)->GetStringUTFChars( env, data, NULL );
 	
 	/* Get the file descriptor. */
-	int fd = INTERNAL_FILE_FD_GET( env, this );
+	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
 	if (write( fd, (void *) buffer, (*env)->GetStringUTFLength( env, data ) ) == -1) {
 		(*env)->ReleaseStringUTFChars( env, data, (const char *) buffer );
@@ -125,7 +125,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobject this,
 /**
  * @see org.xomios.internal.File#_setOffset()
  */
-JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject this, jlong offset, jobject o_whence ) {
+JNIEXPORT jlong JNICALL XOM_NATIVE_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject this, jlong offset, jobject o_whence ) {
 	jclass c_File_Seek = (*env)->GetObjectClass( env, o_whence );
 	
 	/* How are we going to seek? */
@@ -146,7 +146,7 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject 
 	}
 	
 	/* Get the file descriptor. */
-	int fd = INTERNAL_FILE_FD_GET( env, this );
+	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
 	if ((new_offset = lseek(fd, (off_t) offset, whence)) == (off_t) -1) {
 		xomios_error_throw( env, errno );
@@ -163,8 +163,8 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, jobject 
  * 
  * @see org.xomios.internal.File#_getOffset()
  */
-JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, jobject this ) {
-	int fd = INTERNAL_FILE_FD_GET( env, this );
+JNIEXPORT jlong JNICALL XOM_NATIVE_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, jobject this ) {
+	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
 	off_t offset;
 	
@@ -180,8 +180,8 @@ JNIEXPORT jlong JNICALL XOM_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, jobject 
 /**
  * @see org.xomios.internal.File#_close()
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) {	
-	int fd = INTERNAL_FILE_FD_GET( env, this );
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this ) {	
+	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
 	/* Close the file. */
 	if (close( fd ) == -1) {
@@ -190,7 +190,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobject this 
 		return;
 	}
 	
-	INTERNAL_FILE_FD_CLEAR( env, this );
+	XOM_NATIVE_INTERNAL_FILE_FD_CLEAR( env, this );
 	
 	return;
 }

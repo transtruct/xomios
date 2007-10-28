@@ -6,10 +6,10 @@
 
 # Makefile for Linux x86 32-bit architecture
 
-OBJECTS = internal_Socket.o internal_File.o xomios_error.o
-SOURCES = internal_Socket.c internal_File.c xomios_error.c
+OBJECTS = native_internal_Socket.o native_internal_File.o xomios_error.o
+SOURCES = native_internal_Socket.c native_internal_File.c xomios_error.c
 
-CFLAGS += -pedantic -std=c99 -Wall -fPIC -I/usr/lib/jvm/java-6-sun/include/ -I/usr/lib/jvm/java-6-sun/include/linux/
+CFLAGS += -pedantic -std=c99 -Wall -fPIC -I. -I/usr/lib/jvm/java-6-sun/include/ -I/usr/lib/jvm/java-6-sun/include/linux/
 LIBS = -pedantic -std=c99 -Wall -shared -fPIC
 
 .PHONY: all clean
@@ -20,15 +20,11 @@ all: $(OBJECTS)
 xomios_error.o: xomios_error.c
 	$(CC) $(CFLAGS) -o xomios_error.o -c xomios_error.c
 
-internal_Socket.o: internal_Socket.c
-	$(CC) $(CFLAGS) -o internal_Socket.o -c internal_Socket.c
+internal_Socket.o: native_internal_Socket.c
+	$(CC) $(CFLAGS) -o native_internal_Socket.o -c native_internal_Socket.c
 
-internal_File.o: internal_File.c
-	$(CC) $(CFLAGS) -o internal_File.o -c internal_File.c
-
-javah: 
-	javah -jni -classpath ../../../../build/linux/x86_32/classes/ org.xomios.internal.Socket
-	mv org_xomios_internal_Socket.h internal_Socket.h
+internal_File.o: native_internal_File.c
+	$(CC) $(CFLAGS) -o native_internal_File.o -c native_internal_File.c
 
 $(SOURCES):
 

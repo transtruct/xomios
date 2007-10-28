@@ -6,7 +6,7 @@
  * see the LICENSE file included in this distribution.
  */
 
-#include "internal_Socket.h"
+#include "native_internal_Socket.h"
 
 typedef unsigned char ubyte;
 typedef signed char sbyte;
@@ -14,42 +14,33 @@ typedef signed char sbyte;
 /**
  * Converts the internal constants for address family to a native constant
  */
-int getNativeAddressFamily ( int addressFamily ) {
-	int native_af = -1;
+static inline int getNativeAddressFamily ( int addressFamily ) {
 	switch ( addressFamily ) {
-		case INTERNAL_SOCKET_AF_INET:
-				native_af = AF_INET;
-				break;
-		case INTERNAL_SOCKET_AF_INET6:
-				native_af = AF_INET6;
-				break;
-		case INTERNAL_SOCKET_AF_UNIX:
-				native_af = AF_UNIX;
-				break;
-		case INTERNAL_SOCKET_AF_UNSPEC:
-				native_af = AF_UNSPEC;
-				break;		
+		case XOM_NATIVE_INTERNAL_SOCKET_AF_INET:
+				return AF_INET;
+		case XOM_NATIVE_INTERNAL_SOCKET_AF_INET6:
+				return AF_INET6;
+		case XOM_NATIVE_INTERNAL_SOCKET_AF_UNIX:
+				return AF_UNIX;
+		case XOM_NATIVE_INTERNAL_SOCKET_AF_UNSPEC:
+				return AF_UNSPEC;		
 	}
-	return native_af;
+	return -1;
 }
 
 /**
  * Converts the internal constants for socket address to a native constant
  */
-int getNativeSocketType ( int socketType ) {
-	int internal_sock = -1;
+static inline int getNativeSocketType ( int socketType ) {
 	switch ( socketType ) {
-	case INTERNAL_SOCKET_SOCK_STREAM:
-			internal_sock = SOCK_STREAM;
-			break;
-	case INTERNAL_SOCKET_SOCK_DGRAM:
-			internal_sock = SOCK_DGRAM;
-			break;
-	case INTERNAL_SOCKET_SOCK_RAW:
-			internal_sock = SOCK_RAW;
-			break;
+	case XOM_NATIVE_INTERNAL_SOCKET_SOCK_STREAM:
+			return SOCK_STREAM;
+	case XOM_NATIVE_INTERNAL_SOCKET_SOCK_DGRAM:
+			return SOCK_DGRAM;
+	case XOM_NATIVE_INTERNAL_SOCKET_SOCK_RAW:
+			return SOCK_RAW;
 	}
-	return internal_sock;
+	return -1;
 }
 
 /*
@@ -57,7 +48,7 @@ int getNativeSocketType ( int socketType ) {
  * Method:    createSocket
  * Signature: ()V
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( createSocket ) ( JNIEnv *env, jobject obj ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( createSocket ) ( JNIEnv *env, jobject obj ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 	
@@ -97,7 +88,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( createSocket ) ( JNIEnv *env, jobjec
  * Method:    close
  * Signature: ()V
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( close ) ( JNIEnv *env, jobject obj ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( close ) ( JNIEnv *env, jobject obj ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 	
@@ -122,7 +113,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( close ) ( JNIEnv *env, jobject obj )
  * Method:    connect
  * Signature: ([BIII)V
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj, jint port ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj, jint port ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 	jclass NetworkAddress_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/NetworkAddress;" );
@@ -204,7 +195,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( connect ) ( JNIEnv *env, jobject obj
  * Method:    bind
  * Signature: ([BIII)V
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, jint port ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, jint port ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 	jclass NetworkAddress_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/NetworkAddress;" );
@@ -286,7 +277,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( bind ) ( JNIEnv *env, jobject obj, j
  * Method:    listen
  * Signature: ()V
  */
-JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( listen ) (JNIEnv *env, jobject obj ) {
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( listen ) (JNIEnv *env, jobject obj ) {
 	/* Our favorite classes */
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
@@ -315,7 +306,7 @@ JNIEXPORT void JNICALL XOM_INTERNAL_SOCKET( listen ) (JNIEnv *env, jobject obj )
  * Method:    accept
  * Signature: ()Lorg/xomios/internal/Socket;
  */
-JNIEXPORT jobject JNICALL XOM_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject obj ) {
+JNIEXPORT jobject JNICALL XOM_NATIVE_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject obj ) {
 	/* get the classes we need */
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
@@ -441,7 +432,7 @@ JNIEXPORT jobject JNICALL XOM_INTERNAL_SOCKET( accept ) (JNIEnv *env, jobject ob
  * Method:    recv
  * Signature: (I)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL XOM_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj, jint count ) {
+JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj, jint count ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 
@@ -474,7 +465,7 @@ JNIEXPORT jstring JNICALL XOM_INTERNAL_SOCKET( recv ) ( JNIEnv *env, jobject obj
  * Method:    send
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL XOM_INTERNAL_SOCKET( send ) ( JNIEnv *env, jobject obj, jstring data ) {
+JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( send ) ( JNIEnv *env, jobject obj, jstring data ) {
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 
