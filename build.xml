@@ -6,66 +6,120 @@
   This file is released under a modified BSD license. For more information,
   see the LICENSE file included in this distribution.
   -->
-<project
-	name="Xomios" default="compile" basedir="."
-	xmlns:cpptasks="antlib:org.sf.net.antcontrib.cpptasks">
+<project name="Xomios" default="compile" basedir=".">
 
-	<property name="dir" value="." />
-	<property name="dir.src" value="src" />
-	<property name="dir.platform" value="platform" />
-	<property name="dir.build" value="build" />
-	<property name="dir.doc" value="doc" />
+	<property file="version.properties" />
 
-	<!-- Ensure build properties exist -->
-	<fail message="Build platform and architecture must be set and correspond to a valid path">
+	<fail message="Version information is not set">
 		<condition>
 			<not>
 				<and>
-					<isset property="build.platform" />
-					<isset property="build.arch" />
-					<available file="platform/${build.platform}/${build.arch}" type="dir" />
-					<available file="platform/${build.platform}/${build.arch}/src" type="dir" />
+					<isset property="xomios.version.major" />
+					<isset property="xomios.version.minor" />
+					<isset property="xomios.version.fix" />
 				</and>
 			</not>
 		</condition>
 	</fail>
 
-	<property name="dir.platform.platform" value="${dir.platform}/${build.platform}" />
+	<property name="xomios.version" value="${xomios.version.major}.${xomios.version.minor}.${xomios.version.fix}" />
 
-	<property name="dir.platform.platform.arch" value="${dir.platform.platform}/${build.arch}" />
-	<property name="dir.platform.platform.arch.src" value="${dir.platform.platform.arch}/src" />
-	<property name="dir.platform.platform.arch.native" value="${dir.platform.platform.arch}/native" />
+	<property name="dir" value="." />
 
-	<property name="dir.build.output" value="${dir.build}/${build.platform}/${build.arch}" />
+	<property name="dir.src" value="src" />
+
+	<property name="dir.platform" value="platform" />
+	<property name="dir.platform.native" value="${dir.platform}/native" />
+	<property name="dir.platform.distrib" value="${dir.platform}/distrib" />
+	<property name="dir.platform.src" value="${dir.platform}/src" />
+	<property name="dir.platform.tests" value="${dir.platform}/tests" />
+	<property name="dir.platform.tests.src" value="${dir.platform.tests}/src" />
+
+	<property name="dir.build" value="build" />
+
+	<property name="dir.doc" value="doc" />
+
+	<property name="dir.tests" value="tests" />
+	<property name="dir.tests.src" value="${dir.tests}/src" />
+
+	<!-- Ensure build properties exist -->
+	<fail message="Build distribution must be set and correspond to a valid path; try rebuilding with -Dbuild.distrib">
+		<condition>
+			<not>
+				<and>
+					<isset property="build.distrib" />
+					<available file="${dir.platform.distrib}/${build.distrib}/" type="dir" />
+					<available file="${dir.platform.distrib}/${build.distrib}/src" type="dir" />
+				</and>
+			</not>
+		</condition>
+	</fail>
+
+	<property name="dir.current.platform.distrib" value="${dir.platform.distrib}/${build.distrib}" />
+	<property name="dir.current.platform.distrib.src" value="${dir.current.platform.distrib}/src" />
+	<property name="dir.current.platform.distrib.native" value="${dir.current.platform.distrib}/native" />
+	<property name="dir.current.platform.distrib.tests" value="${dir.current.platform.distrib}/tests" />
+	<property name="dir.current.platform.distrib.tests.src" value="${dir.current.platform.distrib.tests}/src" />
+
+	<property name="dir.build.output" value="${dir.build}/${build.distrib}/${os.name}_${os.arch}" />
 	<property name="dir.build.output.classes" value="${dir.build.output}/classes" />
 	<property name="dir.build.output.lib" value="${dir.build.output}/lib" />
 	<property name="dir.build.output.jar" value="${dir.build.output}/jar" />
+	<property name="dir.build.output.tests" value="${dir.build.output}/tests" />
+	<property name="dir.build.output.reports" value="${dir.build.output}/reports" />
 
-	<property name="dir.doc.output" value="${dir.doc}/${build.platform}/${build.arch}" />
+	<property name="dir.doc.output" value="${dir.doc}/${build.distrib}" />
 
-	<property file="platform/${build.platform}/build.properties" />
+	<property file="${dir.current.platform.distrib}/build.properties" />
 
 	<!-- These must be defined per-platform -->
-	<fail message="Build platform is not capable of compiling native code">
+	<fail message="Build platform is not capable of compiling native code (check build.properties)">
 		<condition>
 			<not>
 				<and>
 					<isset property="build.make" />
-					<isset property="build.make.args" />
+					<isset property="build.make.arguments" />
 					<isset property="build.make.targets.compile" />
 					<isset property="build.make.targets.clean" />
+					<isset property="build.make.targets.install" />
 				</and>
 			</not>
 		</condition>
 	</fail>
 
+	<path id="path.tests">
+		<dirset dir="${dir}">
+			<include name="${dir.tests.src}" />
+			<include name="${dir.platform.tests.src}" />
+			<include name="${dir.current.platform.distrib.tests.src}" />
+		</dirset>
+	</path>
+
+	<path id="path.src">
+		<dirset dir="${dir}">
+			<include name="${dir.src}" />
+			<include name="${dir.platform.src}" />
+			<include name="${dir.current.platform.distrib.src}" />
+		</dirset>
+	</path>
+
+	<path id="path.classes">
+		<pathelement path="${dir.build.output.classes}" />
+	</path>
+
+	<path id="path.tests.classes">
+		<path refid="path.classes" />
+		<pathelement path="${dir.build.output.tests}" />
+		<pathelement path="${dir.tests}/junit.jar" />
+	</path>
+
 	<target name="init">
 		<tstamp />
-	</target> 
+	</target>
 
 	<target name="clean" depends="init">
-		<exec executable="${build.make}" dir="${dir.platform.platform.arch.native}">
-			<arg line="${build.make.args}" />
+		<exec executable="${build.make}" dir="${dir.current.platform.distrib.native}">
+			<arg line="${build.make.arguments}" />
 			<arg value="${build.make.targets.clean}" />
 		</exec>
 
@@ -77,31 +131,65 @@
 
 		<javadoc access="public" author="true" destdir="${dir.doc.output}" use="true" version="true" windowtitle="${ant.project.name} Documentation">
 			<sourcepath path="${dir.src}" />
-			<sourcepath path="${dir.platform.platform.arch.src}" />
-			
+			<sourcepath path="${dir.current.platform.distrib.src}" />
+
 			<link href="http://java.sun.com/javase/6/docs/api/" />
 		</javadoc>
 	</target>
 
-	<target name="compile" depends="clean,init">
+	<target name="compile" depends="init">
 		<mkdir dir="${dir.build.output.lib}" />
-		<mkdir dir="${dir.build.output.classes}" />		
+		<mkdir dir="${dir.build.output.classes}" />
 
-		<javac destdir="${dir.build.output.classes}" srcdir="${dir.src}" />
-		<javac destdir="${dir.build.output.classes}" srcdir="${dir.platform.platform.arch.src}" />
+		<javac destdir="${dir.build.output.classes}">
+			<src refid="path.src" />
+		</javac>
 
-		<exec executable="${build.make}" dir="${dir.platform.platform.arch.native}" failonerror="true">
-			<arg line="${build.make.args}" />
+		<exec executable="${build.make}" dir="${dir.current.platform.distrib.native}" failonerror="true">
+			<arg line="${build.make.arguments}" />
+			<arg value="${build.make.argument.define}JAVA_PATH=${java.home}/.." />
 			<arg value="${build.make.targets.compile}" />
 		</exec>
 
-		<move file="${dir.platform.platform.arch.native}/libxomios.so" todir="${dir.build.output.lib}" />
+		<exec executable="${build.make}" dir="${dir.current.platform.distrib.native}" failonerror="true">
+			<arg line="${build.make.arguments}" />
+			<arg value="${build.make.argument.define}JAVA_PATH=${java.home}/.." />
+			<arg value="${build.make.argument.define}INSTALL_PATH=${basedir}/${dir.build.output.lib}" />
+			<arg value="${build.make.targets.install}" />
+		</exec>
 	</target>
 
-	<target name="jar" depends="compile,init">
+	<target name="test" depends="init">
+		<mkdir dir="${dir.build.output.tests}" />
+		<mkdir dir="${dir.build.output.reports}" />
+
+		<javac destdir="${dir.build.output.tests}">
+			<classpath refid="path.tests.classes" />
+			<src refid="path.tests" />
+		</javac>
+
+		<junit printsummary="yes" haltonerror="false">
+			<formatter type="plain" />
+			<classpath refid="path.tests.classes" />
+			<sysproperty key="java.library.path" value="${java.library.path}${path.separator}${dir.build.output.lib}" />
+			<batchtest fork="yes" todir="${dir.build.output.reports}">
+				<fileset dir="${dir.tests.src}">
+					<include name="**/*Test.java" />
+				</fileset>
+				<fileset dir="${dir.platform.tests.src}">
+					<include name="**/*Test.java" />
+				</fileset>
+				<fileset dir="${dir.current.platform.distrib.tests.src}">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="jar" depends="init">
 		<mkdir dir="${dir.build.output.jar}" />
-		<jar destfile="${dir.build.output.jar}/xomios-${build.platform}-${build.arch}.jar">
-			<fileset dir="${dir.build.output.lib}" />
+		<jar destfile="${dir.build.output.jar}/xomios-${xomios.version}-${os.name}_${os.arch}.jar">
+			<fileset dir="${dir.build.output.classes}" />
 		</jar>
 	</target>
 

@@ -68,12 +68,6 @@ public class File {
 	public static final int O_CREAT = 0x0020;
 
 	/**
-	 * Write I/O operations on the file descriptor shall complete as defined by
-	 * synchronized I/O data integrity completion.
-	 */
-	public static final int O_DSYNC = 0x0040;
-
-	/**
 	 * If O_CREAT and O_EXCL are set, open() shall fail if the file exists. The
 	 * check for the existence of the file and the creation of the file if it
 	 * does not exist shall be atomic with respect to other threads executing
@@ -83,32 +77,21 @@ public class File {
 	 * contents of the symbolic link. If O_EXCL is set and O_CREAT is not set,
 	 * the result is undefined.
 	 */
-	public static final int O_EXCL = 0x0080;
+	public static final int O_EXCL = 0x0040;
 
 	/**
 	 * If set and path identifies a terminal device, open() shall not cause the
 	 * terminal device to become the controlling terminal for the process.
 	 */
-	public static final int O_NOCTTY = 0x0100;
+	public static final int O_NOCTTY = 0x0080;
 
-	public static final int O_NONBLOCK = 0x0200;
-
-	/**
-	 * Read I/O operations on the file descriptor shall complete at the same
-	 * level of integrity as specified by the O_DSYNC and O_SYNC flags. If both
-	 * O_DSYNC and O_RSYNC are set in oflag, all I/O operations on the file
-	 * descriptor shall complete as defined by synchronized I/O data integrity
-	 * completion. If both O_SYNC and O_RSYNC are set in flags, all I/O
-	 * operations on the file descriptor shall complete as defined by
-	 * synchronized I/O file integrity completion.
-	 */
-	public static final int O_RSYNC = 0x0400;
+	public static final int O_NONBLOCK = 0x0100;
 
 	/**
 	 * Write I/O operations on the file descriptor shall complete as defined by
 	 * synchronized I/O file integrity completion.
 	 */
-	public static final int O_SYNC = 0x0800;
+	public static final int O_SYNC = 0x0200;
 
 	/**
 	 * If the file exists and is a regular file, and the file is successfully
@@ -118,7 +101,7 @@ public class File {
 	 * is implementation-defined. The result of using O_TRUNC with O_RDONLY is
 	 * undefined.
 	 */
-	public static final int O_TRUNC = 0x1000;
+	public static final int O_TRUNC = 0x0400;
 
 	/**
 	 * Offsets used for seeking within a file.

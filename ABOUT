@@ -1,12 +1,18 @@
+Xomios (eXtensible Object Model for IO Systems) Project
+Copyright (c) 2007 Xomios Contributors
 
---
-Xomios ( eXtensible Object Model for IO Systems )
+Xomios is an alternate IO library for Java that follows a simpler and more
+logical order and structure in design and implementation than the built-in
+libraries. It is an effective replacement for java.io, java.net, and java.nio.
 
-Alternate IO library for Java that, as we feel, follows a simpler and more logic order and 
-structure in design and implementation
+Xomios is released under a modified BSD license. For more information, see the
+LICENSE file included in this distribution.
 
-Authors: Noah Fontes <nfontes@xomios.brewtab.com> (Lead Developer)
-         Christopher Thunes <cthunes@xomios.brewtab.com> (Lead Developer)
-Version: 0.0-nr
-License: BSD 2-Clause License (See LICENSE)
+Contributors:
+  Development:
+    Noah Fontes <nfontes@xomios.brewtab.com> (Lead)
+    Christopher Thunes <cthunes@xomios.brewtab.com> (Lead)
 
+Version: 0.1.0
+
+Website: http://xomios.brewtab.com/

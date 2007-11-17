@@ -14,7 +14,7 @@ syntax: glob
 syntax: regexp
 
 ^\.settings/
-^builder/
+^build/
 ^old/
 ^doc/
 ^\.externalToolBuilders/

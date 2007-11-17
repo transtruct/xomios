@@ -8,8 +8,6 @@
 
 #include "native_internal_File.h"
 
-#include <errno.h>
-
 static jfieldID f_File_fileDescriptor;
 
 #define XOM_NATIVE_INTERNAL_FILE_FD_SET( env, object, value ) (*(env))->SetIntField( (env), (object), f_File_fileDescriptor, (jint) (value) )
@@ -48,11 +46,9 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject
 	
 	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_APPEND ) ? O_APPEND : 0;
 	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_CREAT ) ? O_CREAT : 0;
-	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_DSYNC ) ? O_DSYNC : 0;
 	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_EXCL ) ? O_EXCL : 0;
 	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_NOCTTY ) ? O_NOCTTY : 0;
 	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_NONBLOCK ) ? O_NONBLOCK : 0;
-	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_RSYNC ) ? O_RSYNC : 0;
 	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_SYNC ) ? O_SYNC : 0;
 	oflag |= ( options & XOM_NATIVE_INTERNAL_FILE_O_TRUNC ) ? O_TRUNC : 0;
 	

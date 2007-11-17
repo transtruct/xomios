@@ -11,12 +11,6 @@
 
 #include "xomios_platform.h"
 
-/* This is temporary until the way glibc/POSIX works with strerror_r is worked
- * out properly. */
-#if defined(XOM_PLATFORM_GNU_LINUX)
-# define _GNU_SOURCE
-#endif
-
 #include "xomios.h"
 
 #include <errno.h>

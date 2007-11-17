@@ -178,13 +178,8 @@ void xomios_error_throw ( JNIEnv *env, int error ) {
 	}
 	
 	/* Grab the current error string. */
-#if 0
 	char buffer[__ERROR_BUFFER_SIZE];
 	strerror_r( error, buffer, __ERROR_BUFFER_SIZE - 1 );
-#else
-	char *buffer;
-	buffer = strerror_r( error, buffer, __ERROR_BUFFER_SIZE - 1 );
-#endif
 	
 	/* Throw the exception. */
 	(*env)->ThrowNew( env, c_Exception, buffer );

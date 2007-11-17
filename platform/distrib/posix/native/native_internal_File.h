@@ -11,14 +11,6 @@
 
 #include <xomios_platform.h>
 
-/* TODO Determine other platforms that need some or all of these flags. */
-#if defined(XOM_PLATFORM_GNU_LINUX)
-# define _GNU_SOURCE
-# define _LARGEFILE_SOURCE
-# define _LARGEFILE64_SOURCE
-# define _FILE_OFFSET_BITS 64 /* Provide 64-bit interfaces to file functions. */
-#endif
-
 #include "native_internal.h"
 #include <xomios_error.h>
 
@@ -33,13 +25,11 @@
 #define XOM_NATIVE_INTERNAL_FILE_O_RDWR 3
 #define XOM_NATIVE_INTERNAL_FILE_O_APPEND 16
 #define XOM_NATIVE_INTERNAL_FILE_O_CREAT 32
-#define XOM_NATIVE_INTERNAL_FILE_O_DSYNC 64
-#define XOM_NATIVE_INTERNAL_FILE_O_EXCL 128
-#define XOM_NATIVE_INTERNAL_FILE_O_NOCTTY 256
-#define XOM_NATIVE_INTERNAL_FILE_O_NONBLOCK 512
-#define XOM_NATIVE_INTERNAL_FILE_O_RSYNC 1024
-#define XOM_NATIVE_INTERNAL_FILE_O_SYNC 2048
-#define XOM_NATIVE_INTERNAL_FILE_O_TRUNC 4096
+#define XOM_NATIVE_INTERNAL_FILE_O_EXCL 64
+#define XOM_NATIVE_INTERNAL_FILE_O_NOCTTY 128
+#define XOM_NATIVE_INTERNAL_FILE_O_NONBLOCK 256
+#define XOM_NATIVE_INTERNAL_FILE_O_SYNC 512
+#define XOM_NATIVE_INTERNAL_FILE_O_TRUNC 1024
 
 /**
  * @see org.xomios.internal.File#_initialize()
