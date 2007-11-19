@@ -79,10 +79,13 @@ public class Socket {
 	protected int backlog = 0;
 
 	/**
-	 * The socket file descriptor. This should never be accessed from within
-	 * Java and only from C.
+	 * The socket file descriptor. Passed to C functions.
 	 */
-	protected int cSocket;
+	protected int cSocket = -1;
+
+	boolean connected = false;
+	boolean binded = false;
+	boolean listening = false;
 
 	/**
 	 * This points to a ConnectionEndPoint object describing the attached host
@@ -126,18 +129,29 @@ public class Socket {
 	}
 
 	/**
-	 * Create the new descriptor for a low level socket connection
+	 * Create a new file descriptor for the socket
 	 */
-	public native void createSocket ( );
+	public void createSocket ( ) throws SocketException {
+		this._createSocket();
+	}
+
+	protected native void _createSocket ( ) throws SocketException;
 
 	/**
 	 * Destroy the internal socket connection. After this is called the socket
 	 * cannot be reopened.
 	 */
-	public native void close ( );
+	public void close ( ) throws SocketException, IllegalStateException {
+		if ( this.cSocket < 0 ) {
+			throw new IllegalStateException( "socket not created. can not close" );
+		}
+		this._close();
+	}
+
+	protected native void _close ( ) throws SocketException;
 
 	/**
-	 * Connect the socket to the remove host specified by addr
+	 * Connect the socket to the remote host specified by host
 	 * 
 	 * @param addr A NetworkAddress
 	 * @throws AddressFormatException the specified address is incomplete. i.e.
@@ -145,26 +159,24 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void connect ( ConnectionEndPoint host )
-			throws IllegalArgumentException, SocketException {
-		if ( this.socketType == Socket.SOCK_STREAM
-				&& ! ( host instanceof TCPEndPoint ) ) {
+	public void connect ( ConnectionEndPoint host ) throws IllegalArgumentException, SocketException {
+		if ( this.socketType == Socket.SOCK_STREAM && ! ( host instanceof TCPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_STREAM but ConnectionEndPoint does not not describe a TCP enabled connection" );
 		}
-		else if ( this.socketType == Socket.SOCK_DGRAM
-				&& ! ( host instanceof UDPEndPoint ) ) {
+		else if ( this.socketType == Socket.SOCK_DGRAM && ! ( host instanceof UDPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_DGRAM but ConnectionEndPoint does not not describe a UDP enabled connection" );
 		}
 		else {
 			this.attachedHost = host;
-			this.connect( ( (NetworkPort)host ).getPort() );
+			this._connect( ( (NetworkPort)host ).getPort() );
+			this.connected = true;
 		}
 	}
 
 	/**
 	 * Performs the actual connection operation at the native level
 	 */
-	protected native void connect ( int port );
+	protected native void _connect ( int port );
 
 	/**
 	 * Bind the socket to the specified host and port
@@ -175,26 +187,24 @@ public class Socket {
 	 *             set as part of the NetworkAddress
 	 * @throws SocketException An internal error has occurred while connecting
 	 */
-	public void bind ( ConnectionEndPoint host )
-			throws IllegalArgumentException, SocketException {
-		if ( this.socketType == Socket.SOCK_STREAM
-				&& ! ( host instanceof TCPEndPoint ) ) {
+	public void bind ( ConnectionEndPoint host ) throws IllegalArgumentException, SocketException {
+		if ( this.socketType == Socket.SOCK_STREAM && ! ( host instanceof TCPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_STREAM but ConnectionEndPoint does not not describe a TCP enabled connection" );
 		}
-		else if ( this.socketType == Socket.SOCK_DGRAM
-				&& ! ( host instanceof UDPEndPoint ) ) {
+		else if ( this.socketType == Socket.SOCK_DGRAM && ! ( host instanceof UDPEndPoint ) ) {
 			throw new IllegalArgumentException( "Socket is of type SOCK_DGRAM but ConnectionEndPoint does not not describe a UDP enabled connection" );
 		}
 		else {
 			this.attachedHost = host;
-			this.bind( ( (NetworkPort)host ).getPort() );
+			this._bind( ( (NetworkPort)host ).getPort() );
+			this.binded = true;
 		}
 	}
 
 	/**
 	 * Perform the actual bind operation at the native level
 	 */
-	protected native void bind ( int port );
+	protected native void _bind ( int port );
 
 	/**
 	 * Set the socket as actively listening for incoming connections
@@ -202,15 +212,18 @@ public class Socket {
 	 * @param backlog Size of the queue of connections waiting
 	 * @throws SocketException an internal error has occurred
 	 */
-	public void listen ( int backlog ) throws SocketException {
-		this.backlog = backlog;
-		this.listen();
+	public void listen ( int backlog ) throws SocketException, IllegalStateException {
+		if ( !this.binded ) {
+			throw new IllegalStateException( "socket not bound to host" );
+		}
+		this._listen( backlog );
+		this.listening = true;
 	}
 
 	/**
 	 * Perform the listen operation at a low level
 	 */
-	protected native void listen ( ) throws SocketException;
+	protected native void _listen ( int backlog ) throws SocketException;
 
 	/**
 	 * Return the first connection from the connection queue.
@@ -220,7 +233,23 @@ public class Socket {
 	 * @throws SocketException An error has occurred while accepting the
 	 *             connection
 	 */
-	public native Socket accept ( ) throws SocketException;
+	public Socket accept ( ) throws SocketException, IllegalStateException {
+		if ( this.cSocket < 0 ) {
+			throw new IllegalStateException( "socket not created" );
+		}
+		else if ( !this.binded ) {
+			throw new IllegalStateException( "socket not bound to address" );
+		}
+		else if ( !this.listening ) {
+			throw new IllegalStateException( "socket not listening for connections" );
+		}
+		Socket sClient = this._accept();
+		sClient.connected = true;
+
+		return sClient;
+	}
+
+	protected native Socket _accept ( ) throws SocketException;
 
 	/**
 	 * Read a specified number of bytes from the socket connection
@@ -228,7 +257,19 @@ public class Socket {
 	 * @param size Number of bytes to read
 	 * @return The data read as a String
 	 */
-	public native String recv ( int size );
+	public String recv ( int size ) {
+		if ( this.cSocket < 0 ) {
+			throw new IllegalStateException( "socket not created" );
+		}
+		else if ( !this.connected ) {
+			throw new IllegalStateException( "socket not connected" );
+		}
+
+		return this._recv( size );
+
+	}
+
+	protected native String _recv ( int size );
 
 	/**
 	 * Send a string of bytes out of the socket
@@ -236,7 +277,19 @@ public class Socket {
 	 * @param data A list of bytes as a String
 	 * @return Number of bytes transmitted
 	 */
-	public native int send ( String data );
+	public int send ( String data ) {
+		if ( this.cSocket < 0 ) {
+			throw new IllegalStateException( "socket not created" );
+		}
+		else if ( !this.connected ) {
+			throw new IllegalStateException( "socket not connected" );
+		}
+
+		return this._send( data );
+
+	}
+
+	protected native int _send ( String data );
 
 	/**
 	 * Returns the NetworkAddress associated with the remote end of this socket
@@ -244,7 +297,7 @@ public class Socket {
 	 * 
 	 * @return The NetworkAddress corresponding to the remote end of this
 	 *         connection
-	 * @throws InvalidStateException the socket is not in a state that
+	 * @throws IllegalStateException the socket is not in a state that
 	 *             corresponds with a remote address. i.e. this socket is
 	 *             locally bound and is listening for incoming connections
 	 */
@@ -253,7 +306,7 @@ public class Socket {
 			return this.attachedHost;
 		}
 		else {
-			throw new IllegalStateException( "This socket does not have a logical remote address" );
+			throw new IllegalStateException( "not connected to a logical remote host" );
 		}
 	}
 

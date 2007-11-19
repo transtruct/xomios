@@ -31,41 +31,41 @@
 /**
  * @see org.xomios.internal.Socket#createSocket()
  */
-JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( createSocket ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1createSocket ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.Socket#close()
  */
-JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( close ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1close ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.Socket#connect()
  */
-JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( connect ) ( JNIEnv *, jobject, jint );
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1connect ) ( JNIEnv *, jobject, jint );
 
 /**
  * @see org.xomios.internal.Socket#bind()
  */
-JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( bind ) ( JNIEnv *, jobject, jint );
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1bind ) ( JNIEnv *, jobject, jint );
 
 /**
  * @see org.xomios.internal.Socket#listen()
  */
-JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( listen ) ( JNIEnv *, jobject );
+JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1listen ) ( JNIEnv *, jobject, jint );
 
 /**
  * @see org.xomios.internal.Socket#accept()
  */
-JNIEXPORT jobject JNICALL XOM_NATIVE_INTERNAL_SOCKET( accept ) ( JNIEnv *, jobject );
+JNIEXPORT jobject JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1accept ) ( JNIEnv *, jobject );
 
 /**
  * @see org.xomios.internal.Socket#recv()
  */
-JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( recv ) (JNIEnv *, jobject, jint);
+JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recv ) (JNIEnv *, jobject, jint);
 
 /**
  * @see org.xomios.internal.Socket#send()
  */
-JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( send ) ( JNIEnv *, jobject, jstring );
+JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1send ) ( JNIEnv *, jobject, jstring );
 
 #endif
