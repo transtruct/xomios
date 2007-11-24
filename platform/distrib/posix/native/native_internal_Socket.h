@@ -64,8 +64,18 @@ JNIEXPORT jobject JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1accept ) ( JNIEnv *, job
 JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recv ) (JNIEnv *, jobject, jint);
 
 /**
+ * @see org.xomios.internal.Socket#recvfrom()
+ */
+JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recvfrom ) (JNIEnv *, jobject, jint, jobject);
+
+/**
  * @see org.xomios.internal.Socket#send()
  */
 JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1send ) ( JNIEnv *, jobject, jstring );
+
+/**
+ * @see org.xomios.internal.Socket#sendto()
+ */
+JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1sendto ) ( JNIEnv *, jobject, jstring, jobject );
 
 #endif

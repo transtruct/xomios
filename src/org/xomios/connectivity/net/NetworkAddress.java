@@ -9,8 +9,7 @@
 package org.xomios.connectivity.net;
 
 /**
- * A network address. This can be either IP version 4 or 6 and may or may not
- * be associated with a port number
+ * A network address. This can be either IP version 4 or 6
  * 
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>

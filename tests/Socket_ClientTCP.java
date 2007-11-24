@@ -12,53 +12,41 @@ import org.xomios.connectivity.*;
 import org.xomios.*;
 
 /**
- * Test socket server
+ * Test socket client
  * 
  * @author Christopher Thunes <cthunes@xomios.brewtab.com>
  * @author Noah Fontes <nfontes@xomios.brewtab.com>
  */
-public class ServerTest {
+public class Socket_ClientTCP {
 
 	/**
 	 * @param args None
 	 */
-	public static void main ( String[] args ) throws InterruptedException, IOException {
+	public static void main ( String[] args ) throws SocketException, IOException {
 
 		System.out.print( "Creating socket..." );
-		  Socket s = new Socket();
+		  Socket s = new Socket( Socket.AF_INET, Socket.SOCK_STREAM );
 		  s.createSocket();
 		System.out.println( "done." );
 		
 		System.out.print( "Creating address object..." );
 		  IPv4Address addr = new IPv4Address( "127.0.0.1" );
-		  TCPEndPoint lhost = new TCPEndPoint( addr, Integer.valueOf( args[0] ) );
+		  TCPEndPoint rhost = new TCPEndPoint( addr, Integer.valueOf( args[0] ) );
 		System.out.println( "done." );
 		
 		System.out.print( "Binding connection..." );
-		  s.bind( lhost );
+		  s.connect( rhost );
 		System.out.println( "done." );
 		
-		System.out.print( "Listening for connection..." );
-		  s.listen( 5 );
-		  Socket c = s.accept();
+		System.out.print( "Sending message..." );
+		  s.send( "Hello world!" );
 		System.out.println( "done." );
 		
-		System.out.println( "Host:" );
-		  System.out.println( "\tRemote host: " + c.getAttachedHost().getNetworkAddress().toString() );
-		
-		System.out.println( "Waiting for message..." );
-		  System.out.println( "\t" + c.recv( 100 ) );
-		System.out.println( "done." );
-		
-		System.out.print( "Sending message back to client..." );
-		  c.send( "Hai2u2" );
-		System.out.println( "done." );
-		
-		System.out.print( "Closing client connection..." );
-		  c.close();
+		System.out.println( "Waiting for reply..." );
+		  System.out.println( "\t" + s.recv( 100 ) );
 		System.out.println( "done." );
 		  
-		System.out.print( "Closing server connection..." );
+		System.out.print( "Closing connection..." );
 		  s.close();
 		System.out.println( "done." );
 		

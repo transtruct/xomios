@@ -261,15 +261,33 @@ public class Socket {
 		if ( this.cSocket < 0 ) {
 			throw new IllegalStateException( "socket not created" );
 		}
-		else if ( !this.connected ) {
-			throw new IllegalStateException( "socket not connected" );
+		else if ( this.socketType == Socket.SOCK_STREAM && !this.connected ) {
+			throw new IllegalStateException( "Socket is not connected or bound" );
 		}
 
 		return this._recv( size );
-
 	}
 
 	protected native String _recv ( int size );
+
+	/**
+	 * Read a specified number of bytes from socket and return the message and
+	 * the host the message was received from
+	 * 
+	 * @param size Number of bytes to read
+	 * @param host A ConnectionEndPoint to store the remote hosts information
+	 *            in
+	 * @return The data received as a String
+	 */
+	public String recvfrom ( int size, ConnectionEndPoint host ) {
+		if ( this.cSocket < 0 ) {
+			throw new IllegalStateException( "socket not created" );
+		}
+
+		return this._recvfrom( size, host );
+	}
+
+	protected native String _recvfrom ( int size, ConnectionEndPoint host );
 
 	/**
 	 * Send a string of bytes out of the socket
@@ -282,14 +300,29 @@ public class Socket {
 			throw new IllegalStateException( "socket not created" );
 		}
 		else if ( !this.connected ) {
-			throw new IllegalStateException( "socket not connected" );
+			throw new IllegalStateException( "Socket is of type SOCK_STREAM and is not connected" );
 		}
 
 		return this._send( data );
-
 	}
 
 	protected native int _send ( String data );
+
+	/**
+	 * Send a string of bytes out of the socket to the specified host
+	 * 
+	 * @param data A list of bytes as a String
+	 * @return Number of bytes transmitted
+	 */
+	public int sendto ( String data, ConnectionEndPoint host ) {
+		if ( this.cSocket < 0 ) {
+			throw new IllegalStateException( "socket not created" );
+		}
+
+		return this._sendto( data, host );
+	}
+
+	protected native int _sendto ( String data, ConnectionEndPoint host );
 
 	/**
 	 * Returns the NetworkAddress associated with the remote end of this socket
