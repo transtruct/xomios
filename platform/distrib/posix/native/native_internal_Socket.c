@@ -70,12 +70,12 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1createSocket ) ( JNIEnv *en
 	jint socketType = (*env)->GetIntField( env, obj, socketType_f );
 	
 	jint cSocket;
-	int af, sock; /* Address family and socket type */
+	int native_addressFamily, native_socketType; /* Address family and socket type */
 	
-	af = getNativeAddressFamily( addressFamily );
-	sock = getNativeSocketType ( socketType );
+	native_addressFamily = getNativeAddressFamily( addressFamily );
+	native_socketType = getNativeSocketType ( socketType );
 	
-	cSocket = socket( af, sock, 0 );
+	cSocket = socket( native_addressFamily, native_socketType, 0 );
 	if ( cSocket < 0 ) {
 		/* Error occured while creating socket */
 		xomios_error_throw( env, errno );
@@ -137,15 +137,15 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1connect ) ( JNIEnv *env, jo
 	jobject attachedHost = (*env)->GetObjectField( env, obj, attachedHost_f );
 	
 	/* And lets grab the NetworkAddress */
-	jmethodID getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
-	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, getNetworkAddress_m );	
+	jmethodID ConnectionEndPoint_getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
+	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, ConnectionEndPoint_getNetworkAddress_m );	
 			
 	/* Get the IP address into a standard array (unsigned byte) */
-	jmethodID getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
-	jbyteArray ip = (*env)->CallObjectMethod( env, networkAddress, getAddress_m );
+	jmethodID NetworkAddress_getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
+	jbyteArray ip = (*env)->CallObjectMethod( env, networkAddress, NetworkAddress_getAddress_m );
 	
 	/* The native byte array IP */
-	ubyte *ip_native;
+	ubyte *native_ip;
 
 	/* Return value for connect() call */
 	int err;
@@ -153,19 +153,16 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1connect ) ( JNIEnv *env, jo
 	if ( addressFamily == XOM_NATIVE_INTERNAL_SOCKET_AF_INET ) {
 		if ( socketType == XOM_NATIVE_INTERNAL_SOCKET_SOCK_STREAM || socketType == XOM_NATIVE_INTERNAL_SOCKET_SOCK_DGRAM ) {		
 			/* Java bytes are all signed so we must cast */
-			ip_native = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
+			native_ip = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
 									
 			/* The socket address struct for the connection */
 			struct sockaddr_in endpoint;
 			
-			/* Network order address */
-			in_addr_t addr = (ip_native[0] << 24) |
-							 (ip_native[1] << 16) |
-							 (ip_native[2] <<  8) |
-							 (ip_native[3]);
-			
-			/* Convert the host address to network order and store */		
-			endpoint.sin_addr.s_addr = htonl(addr);
+			/* Convert the host address to network order and store */
+			endpoint.sin_addr.s_addr = htonl( (native_ip[0] << 24) |
+							 				  (native_ip[1] << 16) |
+							 				  (native_ip[2] <<  8) |
+							 				  (native_ip[3]) );
 			endpoint.sin_family = getNativeAddressFamily( addressFamily );
 			endpoint.sin_port = htons((short)port);
 			
@@ -175,7 +172,7 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1connect ) ( JNIEnv *env, jo
 			}
 			
 			/* Release memory */
-			(*env)->ReleaseByteArrayElements( env, ip, (sbyte*) ip_native, 0 );
+			(*env)->ReleaseByteArrayElements( env, ip, (sbyte*) native_ip, 0 );
 		}
 		else {
 			throw_notImplemented( env );
@@ -214,15 +211,15 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1bind ) ( JNIEnv *env, jobje
 	jobject attachedHost = (*env)->GetObjectField( env, obj, attachedHost_f );
 	
 	/* And lets grab the NetworkAddress */
-	jmethodID getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
-	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, getNetworkAddress_m );	
+	jmethodID ConnectionEndPoint_getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
+	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, ConnectionEndPoint_getNetworkAddress_m );	
 			
-	/* Get the IP address */
-	jmethodID getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
-	jbyteArray ip = (*env)->CallObjectMethod( env, networkAddress, getAddress_m );
+	/* Get the IP address into a standard array (unsigned byte) */
+	jmethodID NetworkAddress_getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
+	jbyteArray ip = (*env)->CallObjectMethod( env, networkAddress, NetworkAddress_getAddress_m );
 	
 	/* The native byte array IP */
-	ubyte *ip_native;
+	ubyte *native_ip;
 
 	/* Return value for connect() call */
 	int err;
@@ -230,19 +227,16 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1bind ) ( JNIEnv *env, jobje
 	if ( addressFamily == XOM_NATIVE_INTERNAL_SOCKET_AF_INET ) {
 		if ( socketType == XOM_NATIVE_INTERNAL_SOCKET_SOCK_STREAM || socketType == XOM_NATIVE_INTERNAL_SOCKET_SOCK_DGRAM ) {		
 			/* Java bytes are all signed so we must cast */
-			ip_native = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
+			native_ip = (ubyte*) (*env)->GetByteArrayElements( env, ip, NULL );
 			
 			/* The socket address struct for the connection */
 			struct sockaddr_in endpoint;
 			
-			/* Network order address */
-			in_addr_t addr = (ip_native[0] << 24) |
-							 (ip_native[1] << 16) |
-							 (ip_native[2] <<  8) |
-							 (ip_native[3]);
-			
-			/* Convert the host address to network order and store */		
-			endpoint.sin_addr.s_addr = htonl(addr);
+			/* Convert the host address to network order and store */
+			endpoint.sin_addr.s_addr = htonl( (native_ip[0] << 24) |
+							 				  (native_ip[1] << 16) |
+							 				  (native_ip[2] <<  8) |
+							 				  (native_ip[3]) );
 			endpoint.sin_family = getNativeAddressFamily( addressFamily );
 			endpoint.sin_port = htons((short)port);
 			
@@ -250,6 +244,9 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1bind ) ( JNIEnv *env, jobje
 			if ( err < 0 ) {
 				xomios_error_throw( env, errno );
 			}
+			
+			/* Release memory */
+			(*env)->ReleaseByteArrayElements( env, ip, (sbyte*) native_ip, 0 );
 		}
 		else {
 			throw_notImplemented( env );
@@ -295,7 +292,7 @@ JNIEXPORT jobject JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1accept ) (JNIEnv *env, j
 	jclass SocketException_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/SocketException;" );
 		
 	/* Socket constructor */
-	jmethodID constSocket_m = (*env)->GetMethodID( env, Socket_c, "<init>", "(II)V" );
+	jmethodID Socket_m = (*env)->GetMethodID( env, Socket_c, "<init>", "(II)V" );
 	
 	/* Grab the socket file descriptor value */
 	jfieldID cSocket_f = (*env)->GetFieldID( env, Socket_c, "cSocket", "I" );
@@ -317,71 +314,71 @@ JNIEXPORT jobject JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1accept ) (JNIEnv *env, j
 	if ( addressFamily == XOM_NATIVE_INTERNAL_SOCKET_AF_INET ) {
 		/* Lets get us a class */
 		jclass IPv4Address_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/IPv4Address;" );
-		jmethodID constIPv4Address_m = (*env)->GetMethodID( env, IPv4Address_c, "<init>", "([B)V" );
+		jmethodID IPv4Address_m = (*env)->GetMethodID( env, IPv4Address_c, "<init>", "([B)V" );
 		
 		/* 
 		 * The transport class (probably TCP or UDP) and the method ID for the 
 		 * constructor of this class 
 		 */
-		jclass transport_c;
-		jmethodID constTransport_m;
+		jclass Transport_c;
+		jmethodID Transport_m;
 		
-		struct sockaddr_in remoteAddress;
-		socklen_t remoteAddress_size = sizeof(remoteAddress);
+		struct sockaddr_in native_remoteAddress;
+		socklen_t native_remoteAddress_size = sizeof(native_remoteAddress);
 		
-		int newSocket, err;
+		int native_clientSocketFD, err;
 		
 		/* Perform the accept() call */
-		err = newSocket = accept( cSocket, (struct sockaddr*) &remoteAddress, &remoteAddress_size );
+		err = native_clientSocketFD = accept( cSocket, (struct sockaddr*) &native_remoteAddress, &native_remoteAddress_size );
 		
 		if ( err < 0 ) {
 			xomios_error_throw( env, errno );
 		}
 		
 		/* Remote IP */
-		sbyte ip[4];
-		int ip_native = ntohl(remoteAddress.sin_addr.s_addr);
+		sbyte native_ip[4];
+		int native_ip_raw = ntohl( native_remoteAddress.sin_addr.s_addr );
 		
 		/* 
 		 * The java internal representation of the IP as an array of bytes 
 		 * (byte[]) 
 		 */
-		jbyteArray ip_internal = (*env)->NewByteArray( env, 4 );
+		jbyteArray ip = (*env)->NewByteArray( env, 4 );
 
 		/* Break up the integer into an array of bytes representing the IP */
-		ip[0] = ( ip_native >> 24 ) & 0xFF;
-		ip[1] = ( ip_native >> 16 ) & 0xFF;
-		ip[2] = ( ip_native >>  8 ) & 0xFF;
-		ip[3] = ip_native & 0xFF;
+		native_ip[0] = ( native_ip_raw >> 24 ) & 0xFF;
+		native_ip[1] = ( native_ip_raw >> 16 ) & 0xFF;
+		native_ip[2] = ( native_ip_raw >>  8 ) & 0xFF;
+		native_ip[3] = native_ip_raw & 0xFF;
 		
 		/* Copy the contents to the java array */
-		(*env)->SetByteArrayRegion( env, ip_internal, 0, 4, ip );
+		(*env)->SetByteArrayRegion( env, ip, 0, 4, native_ip );
 		
 		/* Remote port */
-		int remote_port = remoteAddress.sin_port;
+		int native_port = ntohs( native_remoteAddress.sin_port );
 		
 		/* 
 		 * Instantiate transport_c and contTransport_m as defined by the socket
 		 * type
 		 */
 		if ( socketType == XOM_NATIVE_INTERNAL_SOCKET_SOCK_STREAM ) {
-			transport_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/TCPEndPoint;" );
-			constTransport_m = (*env)->GetMethodID( env, transport_c, "<init>", "(Lorg/xomios/connectivity/net/NetworkAddress;I)V" );
+			Transport_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/TCPEndPoint;" );
+			Transport_m = (*env)->GetMethodID( env, Transport_c, "<init>", "(Lorg/xomios/connectivity/net/NetworkAddress;I)V" );
 		}
 		else {
 			(*env)->ThrowNew( env, SocketException_c, "Transport can not utilize accept()" );
 		}
 		
 		/* Create a new socket object with the properties of the remote host */
-		clientSocket = (*env)->NewObject( env, Socket_c, constSocket_m, addressFamily, socketType );
-		jobject newNetworkAddress = (*env)->NewObject( env, IPv4Address_c, constIPv4Address_m, ip_internal );
+		clientSocket = (*env)->NewObject( env, Socket_c, Socket_m, addressFamily, socketType );
+		jobject clientNetworkAddress = (*env)->NewObject( env, IPv4Address_c, IPv4Address_m, ip );
 		
 		/* Create the connection endpoint object */
-		jobject newTransportEndPoint = (*env)->NewObject( env, transport_c, constTransport_m, newNetworkAddress, remote_port );
+		jobject clientTransportEndPoint = (*env)->NewObject( env, Transport_c, Transport_m, clientNetworkAddress, native_port );
 		
 		/* Move over the fields */
-		(*env)->SetObjectField( env, clientSocket, attachedHost_f, newTransportEndPoint );
-		(*env)->SetIntField( env, clientSocket, cSocket_f, newSocket );
+		(*env)->SetObjectField( env, clientSocket, attachedHost_f, clientTransportEndPoint );
+		(*env)->SetIntField( env, clientSocket, cSocket_f, native_clientSocketFD );
 	}
 	else {
 		throw_notImplemented( env );
@@ -403,19 +400,18 @@ JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recv ) ( JNIEnv *env, jo
 	jint cSocket = (*env)->GetIntField( env, obj, cSocket_f );
 	
 	int err;
-	char msgbuf[count * sizeof(char)];
-	int msglen;
+	char native_msg[count * sizeof(char) + 1];
 	
 	/* Zero our memory, eh? Good idea! */
-	memset( msgbuf, '\0', count );
+	memset( native_msg, '\0', count * sizeof(char) + 1 );
 	
-	err = msglen = recv( cSocket, msgbuf, (count-1) * sizeof(char), 0 );
+	err = recv( cSocket, native_msg, count * sizeof(char), 0 );
 
 	if ( err < 0 ) {
 		xomios_error_throw( env, errno );
 	}
 
-	jstring msg = (*env)->NewStringUTF( env, msgbuf );
+	jstring msg = (*env)->NewStringUTF( env, native_msg );
 	
 	return msg;
 }
@@ -441,42 +437,42 @@ JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recvfrom ) ( JNIEnv *env
 	jint socketType = (*env)->GetIntField( env, obj, socketType_f );
 	
 	int err;
-	char msgbuf[count * sizeof(char) + 1];
-	int msglen;
+	char native_msg[count * sizeof(char) + 1];
 	
-	struct sockaddr_in internal_host;
-	socklen_t internal_host_size = sizeof(struct sockaddr_in); 
+	/* Remote host */
+	struct sockaddr_in native_rhost;
+	socklen_t native_rhost_size = sizeof(struct sockaddr_in); 
 	
 	/* Zero our memory, eh? Good idea! */
-	memset( msgbuf, '\0', count );
+	memset( native_msg, '\0', count * sizeof(char) + 1 );
 	
-	err = msglen = recvfrom( cSocket, msgbuf, count * sizeof(char), 0, (struct sockaddr *) &internal_host, &internal_host_size );
+	err = recvfrom( cSocket, native_msg, count * sizeof(char), 0, (struct sockaddr *) &native_rhost, &native_rhost_size );
 
 	if ( err < 0 ) {
 		xomios_error_throw( env, errno );
 	}
 
 	/* Message received that should be returned */
-	jstring msg = (*env)->NewStringUTF( env, msgbuf );
+	jstring msg = (*env)->NewStringUTF( env, native_msg );
 	
 	jobject hostAddress;
 	if ( addressFamily == XOM_NATIVE_INTERNAL_SOCKET_AF_INET ) {
 		jclass IPv4Address_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/IPv4Address;" );
-		jmethodID IPv4Address_init_f = (*env)->GetMethodID( env, IPv4Address_c, "<init>", "([B)V" );
+		jmethodID IPv4Address_m = (*env)->GetMethodID( env, IPv4Address_c, "<init>", "([B)V" );
 		
 		/* Get the IP as a Java byte array */
-		ubyte internal_ip[4];
-		unsigned int ip_asInt = ntohl( internal_host.sin_addr.s_addr );
-		internal_ip[0] = (ip_asInt >> 24 ) & 0xFF;
-		internal_ip[1] = (ip_asInt >> 16 ) & 0xFF;
-		internal_ip[2] = (ip_asInt >>  8 ) & 0xFF;
-		internal_ip[3] = ip_asInt & 0xFF;
+		ubyte native_ip[4];
+		unsigned int native_ip_raw = ntohl( native_rhost.sin_addr.s_addr );
+		native_ip[0] = (native_ip_raw >> 24 ) & 0xFF;
+		native_ip[1] = (native_ip_raw >> 16 ) & 0xFF;
+		native_ip[2] = (native_ip_raw >>  8 ) & 0xFF;
+		native_ip[3] = native_ip_raw & 0xFF;
 		
 		jbyteArray ip = (*env)->NewByteArray( env, 4 );
-		(*env)->SetByteArrayRegion( env, ip, 0, 4, (sbyte *) internal_ip );
+		(*env)->SetByteArrayRegion( env, ip, 0, 4, (sbyte *) native_ip );
 		
 		/* Create the object */
-		hostAddress = (*env)->NewObject( env, IPv4Address_c, IPv4Address_init_f, ip );
+		hostAddress = (*env)->NewObject( env, IPv4Address_c, IPv4Address_m, ip );
 	}
 	else {
 		throw_notImplemented( env );
@@ -491,7 +487,7 @@ JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recvfrom ) ( JNIEnv *env
 		jmethodID ConnectionEndPoint_setNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "setNetworkAddress", "(Lorg/xomios/connectivity/net/NetworkAddress;)V" );
 		
 		(*env)->CallVoidMethod( env, host, ConnectionEndPoint_setNetworkAddress_m, hostAddress );
-		(*env)->CallVoidMethod( env, host, NetworkPort_setPort_m, ntohs(internal_host.sin_port) );
+		(*env)->CallVoidMethod( env, host, NetworkPort_setPort_m, ntohs(native_rhost.sin_port) );
 	}
 	else {
 		throw_notImplemented( env );
@@ -499,6 +495,12 @@ JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recvfrom ) ( JNIEnv *env
 	
 	return msg;
 }
+
+
+// PASSEDDD ##########################
+// PASSEDDD ##########################
+// PASSEDDD ##########################
+// PASSEDDD ##########################
 
 /*
  * Class:     org_xomios_internal_Socket
@@ -513,23 +515,21 @@ JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1send ) ( JNIEnv *env, jobje
 	jint cSocket = (*env)->GetIntField( env, obj, cSocket_f );
 	
 	/* Store return value of send call */
-	int err;
-	
-	/* Retreive the length of the message */
-	int msgLength = (*env)->GetStringLength( env, data );
-	
+	int err, native_msglen;
+	char* native_msg;
+		
 	/* Retreive the string */
-	char* msg = (char*) (*env)->GetStringUTFChars( env, data, NULL );
+	native_msg = (char*) (*env)->GetStringUTFChars( env, data, NULL );
 	
-	err = send( cSocket, msg, msgLength, 0 );
+	err = native_msglen = send( cSocket, native_msg, strlen(native_msg) + 1, 0 );
 	if ( err < 0 ) {
 		xomios_error_throw( env, errno );
 	}
 	
 	/* Release memory allocated to store message */
-	(*env)->ReleaseStringChars( env, data, (jchar*) msg );
+	(*env)->ReleaseStringChars( env, data, (jchar*) native_msg );
 	
-	return msgLength;
+	return native_msglen;
 }
 
 /*
@@ -555,14 +555,14 @@ JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1sendto ) ( JNIEnv *env, job
 	jint socketType = (*env)->GetIntField( env, obj, socketType_f );
 	
 	/* ConnectionEndPoint methods */
-	jmethodID getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;" );
-	jobject host_address = (*env)->CallObjectMethod( env, host, getNetworkAddress_m );
+	jmethodID ConnectionEndPoint_getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;" );
+	jobject hostAddress = (*env)->CallObjectMethod( env, host, ConnectionEndPoint_getNetworkAddress_m );
 	
 	/* Store return value of send call */
-	int err, length;
+	int err, native_msglen;
 		
 	/* Retreive the string */
-	char* msg = (char*) (*env)->GetStringUTFChars( env, data, NULL );
+	char* native_msg = (char*) (*env)->GetStringUTFChars( env, data, NULL );
 	
 	if ( socketType == XOM_NATIVE_INTERNAL_SOCKET_SOCK_STREAM || socketType == XOM_NATIVE_INTERNAL_SOCKET_SOCK_DGRAM ) {
 		jclass NetworkPort_c = (*env)->FindClass( env, "Lorg/xomios/connectivity/net/NetworkPort;" );
@@ -571,21 +571,22 @@ JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1sendto ) ( JNIEnv *env, job
 		jint port = (*env)->CallIntMethod( env, host, NetworkPort_getPort_m );
 		
 		if ( addressFamily == XOM_NATIVE_INTERNAL_SOCKET_AF_INET ) {
-			jmethodID getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
-			jbyteArray ip = (*env)->CallObjectMethod( env, host_address, getAddress_m );			
+			jmethodID NetworkAddress_getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
+			jbyteArray ip = (*env)->CallObjectMethod( env, hostAddress, NetworkAddress_getAddress_m );			
 			ubyte* native_ip = (ubyte *) (*env)->GetByteArrayElements( env, ip, NULL );
 
 			struct sockaddr_in native_endpoint;
-			native_endpoint.sin_family = getNativeAddressFamily(addressFamily);
+			native_endpoint.sin_family = getNativeAddressFamily( addressFamily );
 			native_endpoint.sin_port = htons( port );
-			
 			native_endpoint.sin_addr.s_addr = htonl( ( native_ip[0] << 24 ) |
 			                                         ( native_ip[1] << 16 ) |
 			                                         ( native_ip[2] <<  8 ) | 
 			                                         native_ip[3] );
 			
-			/* + 1 in size to include the \0 */
-			err = length = sendto( cSocket, msg, strlen(msg) + 1, 0, (struct sockaddr *) &native_endpoint, sizeof(native_endpoint) );
+			/* + 1 in size to include the \0 
+			 * NOTE: This is stupid. A low level implementation should be sending byte[]'s not Strings
+			 * TODO: Fix that ^ */
+			err = native_msglen = sendto( cSocket, native_msg, strlen(native_msg) + 1, 0, (struct sockaddr *) &native_endpoint, sizeof(native_endpoint) );
 			
 			if ( err < 0 ) {
 				xomios_error_throw( env, errno );
@@ -602,7 +603,7 @@ JNIEXPORT jint JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1sendto ) ( JNIEnv *env, job
 	}
 	
 	/* Release memory allocated to store message */
-	(*env)->ReleaseStringChars( env, data, (jchar*) msg );
+	(*env)->ReleaseStringChars( env, data, (jchar*) native_msg );
 	
-	return length;
+	return native_msglen;
 }
