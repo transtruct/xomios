@@ -19,8 +19,8 @@ public class FileTest {
 	}
 
 	@After
-	public void tearDown ( ) {
-
+	public void tearDown ( ) throws IOException {
+		file.close();
 	}
 
 	@Test

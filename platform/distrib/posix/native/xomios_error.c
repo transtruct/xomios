@@ -11,6 +11,130 @@
 #define __ERROR_BUFFER_SIZE 256
 
 /**
+ * Array of error numbers and corresponding Java classes. These are defined by
+ * IEEE 1003.1, issue 6.
+ */
+static const char *const __error_handlers[] = {
+	/* java.lang.Error */
+	[EFAULT] = "Ljava/lang/Error;",
+	
+	/* org.xomios.AccessException */
+	[EACCES] = "Lorg/xomios/AccessException;",
+	[EPERM] = "Lorg/xomios/AccessException;",
+	[EROFS] = "Lorg/xomios/AccessException;",
+	
+	/* java.lang.Exception */
+	[EILSEQ] = "Ljava/lang/Exception;", /* Temporary. */
+	
+	/* org.xomios.connectivity.ConnectivityException */
+	[EALREADY] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ECONNABORTED] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ECONNREFUSED] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ECONNRESET] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[EDESTADDRREQ] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[EHOSTUNREACH] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[EISCONN] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ENETDOWN] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ENETRESET] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ENETUNREACH] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ENOPROTOOPT] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ENOTCONN] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ENOTSOCK] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[EPIPE] = "Lorg/xomios/connectivity/ConnectivityException;",
+	[ESPIPE] = "Lorg/xomios/connectivity/ConnectivityException;",
+#if defined( ETIME )
+	[ETIME] = "Lorg/xomios/connectivity/ConnectivityException;",
+#endif
+	[ETIMEDOUT] = "Lorg/xomios/connectivity/ConnectivityException;",
+	
+	/* org.xomios.IOException */
+	[EBADF] = "Lorg/xomios/IOException;",
+	[EBADMSG] = "Lorg/xomios/IOException;",
+	[EIO] = "Lorg/xomios/IOException;",
+	[ENODATA] = "Lorg/xomios/IOException;",
+	[EPROTO] = "Lorg/xomios/IOException;",
+	
+	/* java.lang.IllegalArgumentException */
+	[EDOM] = "Ljava/lang/IllegalArgumentException;",
+	
+	/* org.xomios.IllegalOperationException */
+#if defined( ENOSTR )
+	[ENOSTR] = "Lorg/xomios/IllegalOperationException;",
+#endif
+	[ENOTTY] = "Lorg/xomios/IllegalOperationException;",
+	[EPROTOTYPE] = "Lorg/xomios/IllegalOperationException;",
+	
+	/* org.xomios.location.InvalidLocationException */
+	[EADDRNOTAVAIL] = "Lorg/xomios/location/InvalidLocationException;",
+	[EEXIST] = "Lorg/xomios/location/InvalidLocationException;",
+	[EISDIR] = "Lorg/xomios/location/InvalidLocationException;",
+	[ELOOP] = "Lorg/xomios/location/InvalidLocationException;",
+	[ENAMETOOLONG] = "Lorg/xomios/location/InvalidLocationException;",
+	[ENODEV] = "Lorg/xomios/location/InvalidLocationException;",
+	[ENOENT] = "Lorg/xomios/location/InvalidLocationException;",
+	[ENOTDIR] = "Lorg/xomios/location/InvalidLocationException;",
+	[ENOTEMPTY] = "Lorg/xomios/location/InvalidLocationException;",
+	[ENXIO] = "Lorg/xomios/location/InvalidLocationException;",
+	[ESRCH] = "Lorg/xomios/location/InvalidLocationException;",
+	[EXDEV] = "Lorg/xomios/location/InvalidLocationException;",
+	
+	/* org.xomios.OverflowException */
+	[EFBIG] = "Lorg/xomios/OverflowException;",
+	[EMSGSIZE] = "Lorg/xomios/OverflowException;",
+	[EOVERFLOW] = "Lorg/xomios/OverflowException;",
+	[ERANGE] = "Lorg/xomios/OverflowException;",
+	
+	/* org.xomios.ProcessException */
+	[ECANCELED] = "Lorg/xomios/ProcessException;",
+	[ECHILD] = "Lorg/xomios/ProcessException;",
+	[EIDRM] = "Lorg/xomios/ProcessException;",
+	[EINPROGRESS] = "Lorg/xomios/ProcessException;",
+	[EINTR] = "Lorg/xomios/ProcessException;",
+	[ENOMSG] = "Lorg/xomios/ProcessException;",
+	
+	/* org.xomios.ResourceException */
+	[EAGAIN] = "Lorg/xomios/ResourceException;",
+	[EBUSY] = "Lorg/xomios/ResourceException;",
+	[ENOEXEC] = "Lorg/xomios/ResourceException;",
+	[ETXTBSY] = "Lorg/xomios/ResourceException;",
+	[EWOULDBLOCK] = "Lorg/xomios/ResourceException;",
+	
+	/* org.xomios.ResourceAllocationException */
+	[E2BIG] = "Lorg/xomios/ResourceAllocationException;",
+	[EADDRINUSE] = "Lorg/xomios/ResourceAllocationException;",
+	
+	/* org.xomios.ResourceLimitException */
+	[EDEADLK] = "Lorg/xomios/ResourceLimitException;",
+	[EMFILE] = "Lorg/xomios/ResourceLimitException;",
+	[EMLINK] = "Lorg/xomios/ResourceLimitException;",
+	[ENFILE] = "Lorg/xomios/ResourceLimitException;",
+	[ENOBUFS] = "Lorg/xomios/ResourceLimitException;",
+	[ENOLCK] = "Lorg/xomios/ResourceLimitException;",
+	[ENOMEM] = "Lorg/xomios/ResourceLimitException;",
+	[ENOSPC] = "Lorg/xomios/ResourceLimitException;",
+#if defined( ENOSR )
+	[ENOSR] = "Lorg/xomios/ResourceLimitException;",
+#endif
+	
+	/* java.lang.UnsupportedOperationException */
+	[EAFNOSUPPORT] = "Ljava/lang/UnsupportedOperationException;",
+	[ENOSYS] = "Ljava/lang/UnsupportedOperationException;",
+	[ENOTSUP] = "Ljava/lang/UnsupportedOperationException;",
+	[EOPNOTSUPP] = "Ljava/lang/UnsupportedOperationException;",
+	[EPROTONOSUPPORT] = "Ljava/lang/UnsupportedOperationException;",
+	
+	/* java.lang.Exception */
+	/* The following error codes are reserved and are not currently used by
+	 * implementations. */
+	[EDQUOT] = "Ljava/lang/Exception;",
+	[EMULTIHOP] = "Ljava/lang/Exception;",
+	[ENOLINK] = "Ljava/lang/Exception;",
+	[ESTALE] = "Ljava/lang/Exception;"
+};
+
+static const int __error_handlers_size = sizeof(__error_handlers) / sizeof(__error_handlers[EFAULT]);
+
+/**
  * Throws an exception based on the POSIX error code passed.
  * 
  * @param env The JNI environment.
@@ -21,166 +145,19 @@ void xomios_error_throw ( JNIEnv *env, int error ) {
 		return;
 	}
 	
-	jclass c_Exception;
-	
-	switch ( error ) {
-	/* java.lang.Error */
-	case EFAULT:
-		c_Exception = (*env)->FindClass( env, "Ljava/lang/Error;" );
-		break;
-	
-	/* org.xomios.AccessException */
-	case EACCES:
-	case EPERM:
-	case EROFS:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/AccessException" );
-		break;
-	
-	/* java.lang.Exception */
-	case EILSEQ:
-		/* Temporary. */
-		c_Exception = (*env)->FindClass( env, "Ljava/lang/Exception;" );
-		break;
-	
-	/* org.xomios.connectivity.ConnectivityException */
-	case EALREADY:
-	case ECONNABORTED:
-	case ECONNREFUSED:
-	case ECONNRESET:
-	case EDESTADDRREQ:
-	case EHOSTUNREACH:
-	case EISCONN:
-	case ENETDOWN:
-	case ENETRESET:
-	case ENETUNREACH:
-	case ENOPROTOOPT:
-	case ENOTCONN:
-	case ENOTSOCK:
-	case EPIPE:
-	case ESPIPE:
-#if defined( ETIME )
-	case ETIME:
-#endif
-	case ETIMEDOUT:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/connectivity/ConnectivityException;" );
-		break;
-	
-	/* org.xomios.IOException */
-	case EBADF:
-	case EBADMSG:
-	case EIO:
-	case ENODATA:
-	case EPROTO:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/IOException;" );
-		break;
-	
-	/* java.lang.IllegalArgumentException */
-	case EDOM:
-		c_Exception = (*env)->FindClass( env, "Ljava/lang/IllegalArgumentException;" );
-		break;
-	
-	/* org.xomios.IllegalOperationException */
-#if defined( ENOSTR )
-	case ENOSTR:
-#endif
-	case ENOTTY:
-	case EPROTOTYPE:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/IllegalOperationException;" );
-		break;
-	
-	/* org.xomios.location.InvalidLocationException */
-	case EADDRNOTAVAIL:
-	case EEXIST:
-	case EISDIR:
-	case ELOOP:
-	case ENAMETOOLONG:
-	case ENODEV:
-	case ENOENT:
-	case ENOTDIR:
-	case ENOTEMPTY:
-	case ENXIO:
-	case ESRCH:
-	case EXDEV:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/location/InvalidLocationException;" );
-		break;
-	
-	/* org.xomios.OverflowException */
-	case EFBIG:
-	case EMSGSIZE:
-	case EOVERFLOW:
-	case ERANGE:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/OverflowException;" );
-		break;
-	
-	/* org.xomios.ProcessException */
-	case ECANCELED:
-	case ECHILD:
-	case EIDRM:
-	case EINPROGRESS:
-	case EINTR:
-	case ENOMSG:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/ProcessException;" );
-		break;
-	
-	/* org.xomios.ResourceException */
-	case EAGAIN:
-	case EBUSY:
-	case ENOEXEC:
-	case ETXTBSY:
-#if defined(EWOULDBLOCK) && EWOULDBLOCK != EAGAIN
-	case EWOULDBLOCK:
-#endif
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/ResourceException;" );
-		break;
-	
-	/* org.xomios.ResourceAllocationException */
-	case E2BIG:
-	case EADDRINUSE:
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/ResourceAllocationException;" );
-		break;
-	
-	/* org.xomios.ResourceLimitException */
-	case EDEADLK:
-	case EMFILE:
-	case EMLINK:
-	case ENFILE:
-	case ENOBUFS:
-	case ENOLCK:
-	case ENOMEM:
-	case ENOSPC:
-#if defined( ENOSR )
-	case ENOSR:
-#endif
-		c_Exception = (*env)->FindClass( env, "Lorg/xomios/ResourceLimitException;" );
-		break;
-	
-	/* java.lang.UnsupportedOperationException */
-	case EAFNOSUPPORT:
-	case ENOSYS:
-	case ENOTSUP:
-#if EOPNOTSUPP != ENOTSUP
-	case EOPNOTSUPP:
-#endif
-	case EPROTONOSUPPORT:
-		c_Exception = (*env)->FindClass( env, "Ljava/lang/UnsupportedOperationException;" );
-		break;
-	
-	/* java.lang.Exception */
-	/* The following error codes are reserved and are not currently used by
-	 * implementations. */
-	case EDQUOT:
-	case EMULTIHOP:
-	case ENOLINK:
-	case ESTALE:
-	default:
-		c_Exception = (*env)->FindClass( env, "Ljava/lang/Exception;" );
-		break;
-	}
-	
 	/* Grab the current error string. */
 	char buffer[__ERROR_BUFFER_SIZE];
 	strerror_r( error, buffer, __ERROR_BUFFER_SIZE - 1 );
 	
-	/* Throw the exception. */
+	jclass c_Exception;
+	
+	if (error >= __error_handlers_size || error < 0 || __error_handlers[error] == NULL) {
+		/* No match, so throw a default exception. */
+		c_Exception = (*env)->FindClass( env, "Ljava/lang/Exception;" );
+	}
+	else {
+		c_Exception = (*env)->FindClass( env, __error_handlers[error] );
+	}
+	
 	(*env)->ThrowNew( env, c_Exception, buffer );
 }

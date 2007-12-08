@@ -62,10 +62,9 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1open ) ( JNIEnv *env, jobject
 	/* Open the file. */
 	int fd;
 	if ((fd = open( (char *) path, oflag )) < 0) {
-		/* Clean up path. */
 		(*env)->ReleaseStringUTFChars( env, s_path, (const char *) path );
-		xomios_error_throw( env, errno );
 		
+		xomios_error_throw( env, errno );
 		return;
 	}
 	
@@ -88,9 +87,8 @@ JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_FILE( _1read ) ( JNIEnv *env, jobj
 	/* Wipe the buffer. */
 	memset( buffer, '\0', length + 1 );
 	
-	if (read( fd, buffer, length ) == -1) {
+	if (read( fd, buffer, length ) < 0) {
 		xomios_error_throw( env, errno );
-		
 		return (jstring) NULL;
 	}
 	
@@ -106,7 +104,7 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1write ) ( JNIEnv *env, jobjec
 	/* Get the file descriptor. */
 	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
-	if (write( fd, (void *) buffer, (*env)->GetStringUTFLength( env, data ) ) == -1) {
+	if (write( fd, (void *) buffer, (*env)->GetStringUTFLength( env, data ) ) < 0) {
 		(*env)->ReleaseStringUTFChars( env, data, (const char *) buffer );
 		xomios_error_throw( env, errno );
 		
@@ -144,7 +142,7 @@ JNIEXPORT jlong JNICALL XOM_NATIVE_INTERNAL_FILE( _1setOffset ) ( JNIEnv *env, j
 	/* Get the file descriptor. */
 	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
-	if ((new_offset = lseek(fd, (off_t) offset, whence)) == (off_t) -1) {
+	if ((new_offset = lseek(fd, (off_t) offset, whence)) < (off_t) 0) {
 		xomios_error_throw( env, errno );
 		
 		return (jlong) 0;
@@ -164,9 +162,8 @@ JNIEXPORT jlong JNICALL XOM_NATIVE_INTERNAL_FILE( _1getOffset ) ( JNIEnv *env, j
 	
 	off_t offset;
 	
-	if ((offset = lseek(fd, (off_t) 0, SEEK_CUR)) == (off_t) -1) {
+	if ((offset = lseek(fd, (off_t) 0, SEEK_CUR)) < (off_t) 0) {
 		xomios_error_throw( env, errno );
-		
 		return (jlong) 0;
 	}
 	
@@ -180,9 +177,8 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_FILE( _1close ) ( JNIEnv *env, jobjec
 	int fd = XOM_NATIVE_INTERNAL_FILE_FD_GET( env, this );
 	
 	/* Close the file. */
-	if (close( fd ) == -1) {
+	if (close( fd ) < 0) {
 		xomios_error_throw( env, errno );
-		
 		return;
 	}
 	

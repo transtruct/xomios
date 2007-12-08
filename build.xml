@@ -41,6 +41,11 @@
 
 	<property name="dir.tests" value="tests" />
 	<property name="dir.tests.src" value="${dir.tests}/src" />
+	
+	<property name="dir.util" value="util" />
+	<property name="dir.util.ant" value="${dir.util}/ant" />
+	<property name="dir.util.ant.src" value="${dir.util.ant}/src" />
+	<property name="dir.util.ant.classes" value="${dir.util.ant}/classes" />
 
 	<!-- Ensure build properties exist -->
 	<fail message="Build distribution must be set and correspond to a valid path; try rebuilding with -Dbuild.distrib">
@@ -72,7 +77,7 @@
 
 	<property file="${dir.current.platform.distrib}/build.properties" />
 
-	<!-- These must be defined per-platform -->
+	<!-- These must be defined per-platform. -->
 	<fail message="Build platform is not capable of compiling native code (check build.properties)">
 		<condition>
 			<not>
@@ -112,9 +117,25 @@
 		<pathelement path="${dir.build.output.tests}" />
 		<pathelement path="${dir.tests}/junit.jar" />
 	</path>
+	
+	<path id="path.platform.native">
+		<fileset dir="${dir}">
+			<include name="${dir.current.platform.distrib.native}/**/*.c" />
+			<include name="${dir.platform.native}/**/*.c" />
+		</fileset>
+	</path>
 
 	<target name="init">
 		<tstamp />
+		
+		<!-- Preliminary compilation for internal tasks. -->
+		<mkdir dir="${dir.util.ant.classes}" />
+		<javac destdir="${dir.util.ant.classes}" srcdir="${dir.util.ant.src}" />
+		
+		<taskdef name="cc" classname="org.xomios.internal.ant.tasks.CCTask" classpath="${dir.util.ant.classes}" />
+		<cc>
+			<source refid="path.platform.native" />
+		</cc>
 	</target>
 
 	<target name="clean" depends="init">
