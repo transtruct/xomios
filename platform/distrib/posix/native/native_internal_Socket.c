@@ -496,12 +496,6 @@ JNIEXPORT jstring JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1recvfrom ) ( JNIEnv *env
 	return msg;
 }
 
-
-// PASSEDDD ##########################
-// PASSEDDD ##########################
-// PASSEDDD ##########################
-// PASSEDDD ##########################
-
 /*
  * Class:     org_xomios_internal_Socket
  * Method:    send
