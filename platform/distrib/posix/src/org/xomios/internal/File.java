@@ -136,7 +136,7 @@ public class File {
 	 * Whether the file is currently opened.
 	 */
 	/* TODO Possibly implement this using a FileDescriptor class. */
-	private final int fileDescriptor = -1;
+	private int fileDescriptor = -1;
 
 	/**
 	 * Constructs and opens a new file.
@@ -262,7 +262,8 @@ public class File {
 		return this._setOffset( offset, whence );
 	}
 
-	private native long _setOffset ( long offset, Seek whence ) throws IOException;
+	private native long _setOffset ( long offset, Seek whence )
+			throws IOException;
 
 	/**
 	 * Retrieves the current cursor offset in the file.

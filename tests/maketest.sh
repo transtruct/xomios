@@ -1,3 +1,3 @@
 #!/bin/sh
 
-LD_LIBRARY_PATH=../build/posix/Linux_i386/lib/ CLASSPATH=.:../build/posix/Linux_i386/classes/ javac $@
+LD_LIBRARY_PATH=../build/posix/linux-i686/lib/ CLASSPATH=.:../build/posix/linux-i686/classes/ javac $@

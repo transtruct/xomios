@@ -1,0 +1,120 @@
+# Xomios Project
+# Copyright (c) 2007 Xomios Contributors
+#
+# This file is released under a modified BSD license. For more information,
+# see the LICENSE file included in this distribution.
+
+from transtruct.conductor.environment import Environment, Target
+from transtruct.conductor.utility import Selector
+from transtruct.conductor.location import Directory, File, Aggregate, GlobMatcher, RegexMatcher
+from transtruct.conductor.property import from_file
+
+from transtruct.conductor.task.language.java import CompileJavaTask
+from transtruct.conductor.task.language.c import CompileCTask
+from transtruct.conductor.task.link import LinkTask
+from transtruct.conductor.task.location import CreateContainerTask, RemoveContainerTask
+
+# Initialize project
+xomios = Environment('xomios')
+
+version = from_file('version.properties')['version']
+
+# Determine platform
+import os, platform
+
+try:
+	source_distribution = Selector({'nt': 'windows', 'posix': 'posix'}).select(os.name)
+except KeyError:
+	xomios.error('Unknown distribution; cannot build', severity=xomios.error.FAIL)
+
+build_platform = platform.system().lower()
+build_architecture = platform.machine()
+
+# Define paths
+path_src = Directory('src')
+
+path_platform = Directory('platform')
+path_platform_src = Directory(path_platform, 'src')
+path_platform_native = Directory(path_platform, 'native')
+path_platform_tests_src = Directory(path_platform, 'tests', 'src')
+
+path_platform_distribution = Directory(path_platform, 'distrib', source_distribution)
+path_platform_distribution_src = Directory(path_platform_distribution, 'src')
+path_platform_distribution_native = Directory(path_platform_distribution, 'native')
+path_platform_distribution_tests_src = Directory(path_platform_distribution, 'tests', 'src')
+
+path_build = Directory('build')
+path_build_distribution = Directory(path_build, source_distribution, '%s-%s' % (build_platform, build_architecture))
+path_build_distribution_classes = Directory(path_build_distribution, 'classes')
+path_build_distribution_lib = Directory(path_build_distribution, 'lib')
+path_build_distribution_jar = Directory(path_build_distribution, 'jar')
+path_build_distribution_tests = Directory(path_build_distribution, 'tests')
+path_build_distribution_reports = Directory(path_build_distribution, 'reports')
+
+path_doc = Directory('doc')
+path_doc_distribution = Directory(path_doc, source_distribution)
+
+path_tests = Directory('tests')
+path_tests_src = Directory(path_tests, 'src')
+
+src = Aggregate([path_src, path_platform_src, path_platform_distribution_src])
+tests = Aggregate([path_tests_src, path_platform_tests_src, path_platform_distribution_tests_src])
+native = Aggregate([path_platform_native, path_platform_distribution_native])
+
+# Initialization target
+init = Target()
+
+xomios.add_target('init', init, hidden=True)
+
+# Clean target
+clean = Target()
+clean.add_task(RemoveContainerTask(path_build_distribution), ignore_errors=True)
+clean.add_task(RemoveContainerTask(path_doc_distribution), ignore_errors=True)
+clean.add_task(RemoveContainerTask(GlobMatcher('*.o').filter(path_platform_distribution_native)), ignore_errors=True)
+
+xomios.add_target('clean', clean, depends='init')
+
+# Compile target
+compile = Target()
+compile.add_task(CreateContainerTask(path_build_distribution_classes), ignore_errors=True)
+compile.add_task(CreateContainerTask(path_build_distribution_lib), ignore_errors=True)
+compile.add_task(CompileJavaTask(src, class_destination=path_build_distribution_classes, class_path=[path_build_distribution_classes]))
+# standard=STD_C99, errors=E_ALL | E_UNDEF | E_MISSING_PROTOTYPES | E_MISSING_DECLARATIONS, 
+compile.add_task(
+	CompileCTask(
+		native,
+		pic=True,
+		warnings_as_errors=True,
+		macro_assignments={'_LARGEFILE_SOURCE': True, '_FILE_OFFSET_BITS': 64, '_XOPEN_SOURCE': 600},
+		include=[
+			path_platform_distribution_native,
+			path_platform_native,
+			Directory('/usr/lib/jvm/java-6-sun/include'),
+			RegexMatcher('jni_md.h$').filter(Directory('/usr/lib/jvm/java-6-sun/include')).contents[0].directory
+		]
+	)
+)
+compile.add_task(LinkTask(native, shared=True, output=File(path_build_distribution_lib, 'libxomios.so')))
+
+xomios.add_target('compile', compile, depends='init')
+
+# Documentation target
+doc = Target()
+#doc.add_task()
+
+xomios.add_target('doc', doc, depends='init')
+
+# Test target
+test = Target()
+test.add_task(CreateContainerTask(path_build_distribution_tests), ignore_errors=True)
+test.add_task(CompileJavaTask(tests, class_destination=path_build_distribution_tests))
+#test.add_task(JunitTask(tests, matcher=GlobMatcher('*Test.java')))
+
+xomios.add_target('test', test, depends=('compile', 'init'))
+
+# Distrib target
+distrib = Target()
+distrib.add_task(CreateContainerTask(path_build_distribution_jar), ignore_errors=True)
+#distrib.add_task(CreateJarTask(path_build_distribution_classes, output=File(path_build_distribution_jar, 'xomios-%s-%s_%s.jar' % (version, build_platform, build_architecture))))
+
+xomios.add_target('distrib', distrib, depends=('compile', 'doc', 'test', 'init'))

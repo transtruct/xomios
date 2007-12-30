@@ -12,7 +12,7 @@
 #include <xomios_platform.h>
 
 #include "native_internal.h"
-#include <xomios_error.h>
+#include "xomios_error.h"
 
 #include <fcntl.h>
 #include <unistd.h>

@@ -1,0 +1,49 @@
+#! /usr/bin/env python
+# This file is part of Conductor, a free build system.
+# Copyright (c) 2007, 2008 Transtruct Foundation
+#
+# This file is released under a modified BSD license. For more information,
+# see the LICENSE file included in this distribution.
+
+from transtruct.conductor.location import Aggregate, Directory, GlobMatcher
+from transtruct.conductor.execution import ConsoleExecutor
+from transtruct.conductor.environment import Environment
+
+import sys
+
+"""
+class ConsoleEnvironment(Environment):
+	def __init__(self, project):
+		Environment.__init__(self, project, sys.stdout)
+		console = logging.StreamHandler(self.stream)
+		console.setLevel(logging.INFO)
+		console.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(name)s: %(message)s', '%H:%M:%S'))
+		logging.getLogger().addHandler(console)
+		
+		parser = OptionParser(usage='usage: %prog [options] target...', version='%prog 1.0')
+		parser.add_option('-D', action='callback', callback=self.__parse_macro_argument, callback_args=(self,), type='string',
+						help='assign the macro NAME to VALUE', metavar='NAME=VALUE')
+		
+		(options, self.targets) = parser.parse_args()
+	
+	@staticmethod
+	def __parse_macro_argument(option, string, passed_value, parser, self):
+		try:
+			(name, value) = passed_value.split('=', 1)
+		except ValueError:
+			name = passed_value
+			value = True
+		
+		self.macros[name] = value
+"""
+
+conductors = GlobMatcher('*.conduct').filter(Aggregate(Directory('.').entries))
+for conductor in conductors:
+	execfile(str(conductor))
+
+if not len(Environment.environments):
+	sys.stdout.write('No environments found')
+	sys.exit(1)
+
+executor = ConsoleExecutor(Environment.environments)
+executor.execute()
