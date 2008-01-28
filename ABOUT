@@ -1,5 +1,5 @@
 Xomios (eXtensible Object Model for IO Systems) Project
-Copyright (c) 2007 Xomios Contributors
+Copyright (c) 2007-2008 Transtruct Foundation
 
 Xomios is an alternate IO library for Java that follows a simpler and more
 logical order and structure in design and implementation than the built-in
@@ -10,9 +10,9 @@ LICENSE file included in this distribution.
 
 Contributors:
   Development:
-    Noah Fontes <nfontes@xomios.brewtab.com> (Lead)
-    Christopher Thunes <cthunes@xomios.brewtab.com> (Lead)
+    Noah Fontes <nfontes@transtruct.org> (Lead)
+    Christopher Thunes <cthunes@transtruct.org> (Lead)
 
 Version: 0.1.0
 
-Website: http://xomios.brewtab.com/
+Website: http://xomios.transtruct.org/
