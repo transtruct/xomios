@@ -41,6 +41,11 @@ public class Socket {
 
 	/**
 	 * Unix file socket
+	 * 
+	 * NOTE: Do we really want this here? I mean, we are planning on having
+	 * file support and generic network like IO on all subsystems. Why bother
+	 * supporting something like this when many operating systems don't
+	 * implement it at all
 	 */
 	public static final int AF_UNIX = 12;
 
@@ -253,6 +258,9 @@ public class Socket {
 
 	/**
 	 * Read a specified number of bytes from the socket connection
+	 * 
+	 * NOTE: This should definitely not be returning a String that is returned.
+	 * Make it a byte[]. Same for all send like functions.
 	 * 
 	 * @param size Number of bytes to read
 	 * @return The data read as a String

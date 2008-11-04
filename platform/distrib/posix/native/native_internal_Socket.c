@@ -139,11 +139,11 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1connect ) ( JNIEnv *env, jo
 	/* And lets grab the NetworkAddress */
 	jmethodID ConnectionEndPoint_getNetworkAddress_m = (*env)->GetMethodID( env, ConnectionEndPoint_c, "getNetworkAddress", "()Lorg/xomios/connectivity/net/NetworkAddress;");
 	jobject networkAddress = (*env)->CallObjectMethod( env, attachedHost, ConnectionEndPoint_getNetworkAddress_m );	
-			
+
 	/* Get the IP address into a standard array (unsigned byte) */
 	jmethodID NetworkAddress_getAddress_m = (*env)->GetMethodID( env, NetworkAddress_c, "getAddress", "()[B" );
 	jbyteArray ip = (*env)->CallObjectMethod( env, networkAddress, NetworkAddress_getAddress_m );
-	
+
 	/* The native byte array IP */
 	ubyte *native_ip;
 
@@ -160,9 +160,9 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1connect ) ( JNIEnv *env, jo
 			
 			/* Convert the host address to network order and store */
 			endpoint.sin_addr.s_addr = htonl( (native_ip[0] << 24) |
-							 				  (native_ip[1] << 16) |
-							 				  (native_ip[2] <<  8) |
-							 				  (native_ip[3]) );
+                                                          (native_ip[1] << 16) |
+                                                          (native_ip[2] <<  8) |
+                                                          (native_ip[3]) );
 			endpoint.sin_family = getNativeAddressFamily( addressFamily );
 			endpoint.sin_port = htons((short)port);
 			
@@ -234,9 +234,9 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1bind ) ( JNIEnv *env, jobje
 			
 			/* Convert the host address to network order and store */
 			endpoint.sin_addr.s_addr = htonl( (native_ip[0] << 24) |
-							 				  (native_ip[1] << 16) |
-							 				  (native_ip[2] <<  8) |
-							 				  (native_ip[3]) );
+                                                          (native_ip[1] << 16) |
+                                                          (native_ip[2] <<  8) |
+                                                          (native_ip[3]) );
 			endpoint.sin_family = getNativeAddressFamily( addressFamily );
 			endpoint.sin_port = htons((short)port);
 			
@@ -264,7 +264,7 @@ JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1bind ) ( JNIEnv *env, jobje
  * Signature: ()V
  */
 JNIEXPORT void JNICALL XOM_NATIVE_INTERNAL_SOCKET( _1listen ) (JNIEnv *env, jobject obj, jint backlog ) {
-	/* Our favorite classes */
+	/* Our favorite class */
 	jclass Socket_c = (*env)->GetObjectClass( env, obj );
 
 	/* Grab the socket file descriptor value */
