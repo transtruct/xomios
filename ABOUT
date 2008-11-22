@@ -1,18 +1,15 @@
-Xomios (eXtensible Object Model for IO Systems) Project
-Copyright (c) 2007-2008 Transtruct Foundation
+Transtruct Xomios
+=================
 
-Xomios is an alternate IO library for Java that follows a simpler and more
-logical order and structure in design and implementation than the built-in
-libraries. It is an effective replacement for java.io, java.net, and java.nio.
+Copyright (c) 2007-2008 Transtruct. All rights reserved.
 
-Xomios is released under a modified BSD license. For more information, see the
-LICENSE file included in this distribution.
+Xomios (eXtensible Object Model for IO Systems) is an alternate IO library for
+Java that follows a simpler and more logical order and structure in design and
+implementation than the built-in libraries. It is an effective replacement for
+java.io, java.net, and java.nio.
 
-Contributors:
-  Development:
-    Noah Fontes <nfontes@transtruct.org> (Lead)
-    Christopher Thunes <cthunes@transtruct.org> (Lead)
-
-Version: 0.1.0
-
+Version: 0.0.1
 Website: http://xomios.transtruct.org/
+Contributors:
+  Noah Fontes <nfontes@transtruct.org>
+  Christopher Thunes <cthunes@transtruct.org>
